@@ -75,3 +75,9 @@ wspace_nios
 workspace
 source_library/
 LimeSDR-Mini_factory/src/configuration/libraries/
+
+#--------------
+# Eclipse folders
+#--------------
+**/software/.metadata/
+**/software/RemoteSystemsTempFiles/

@@ -77,12 +77,12 @@ ALT_CPPFLAGS += -pipe
 
 # This following VERSION comment indicates the version of the tool used to 
 # generate this makefile. A makefile variable is provided for VERSION as well. 
-# ACDS_VERSION: 18.0
-ACDS_VERSION := 18.0
+# ACDS_VERSION: 18.1
+ACDS_VERSION := 18.1
 
 # This following BUILD_NUMBER comment indicates the build number of the tool 
 # used to generate this makefile. 
-# BUILD_NUMBER: 614
+# BUILD_NUMBER: 625
 
 # Qsys--generated SOPCINFO file. Required for resolving node instance ID's with 
 # design component names. 
@@ -157,9 +157,9 @@ SOPC_SYSID_FLAG += --sidp=0x202208
 ELF_PATCH_FLAG  += --sidp 0x202208
 
 # The SOPC Timestamp 
-# setting SOPC_TIMESTAMP is 1543845083
-SOPC_SYSID_FLAG += --timestamp=1543845083
-ELF_PATCH_FLAG  += --timestamp 1543845083
+# setting SOPC_TIMESTAMP is 1619098822
+SOPC_SYSID_FLAG += --timestamp=1619098822
+ELF_PATCH_FLAG  += --timestamp 1619098822
 
 # Build a custom version of newlib with the specified space-separated compiler 
 # flags. The custom newlib build will be placed in the <bsp root>/newlib 
