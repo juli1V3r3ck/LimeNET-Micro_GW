@@ -30,17 +30,18 @@ entity FT601 is
 			reset_n        : in std_logic;
 			trnsf_en       : in std_logic;
 			ready          : out std_logic;
-			rd_wr          : in std_logic;		-- 0- MASTER RD (PC->FPGA), 1-MASTER WR (FPGA->PC)
+			rd_wr          : in std_logic;		                                 -- 0- MASTER RD (PC->FPGA), 1-MASTER WR (FPGA->PC)
 			ch_n           : in std_logic_vector(3 downto 0);
          RD_data_valid  : out std_logic;
 			RD_data        : out std_logic_vector(FT_data_width-1 downto 0);
          WR_data_req    : out std_logic;     
-			WR_data        : in std_logic_vector(FT_data_width-1 downto 0); -- should be 2 cycle latency after WR_data_req 
-			wr_n           : out std_logic;
-			rxf_n          : in std_logic;
-			data           : inout std_logic_vector(FT_data_width-1 downto 0);
-			be             : inout std_logic_vector(FT_be_width-1 downto 0);
-			txe_n          : in std_logic
+			WR_data        : in std_logic_vector(FT_data_width-1 downto 0);      -- should be 2 cycle latency after WR_data_req
+		   -- FTDI	
+			wr_n           : out std_logic;                                      -- write_request_n
+			rxf_n          : in std_logic;                                       -- rx_full_n
+			data           : inout std_logic_vector(FT_data_width-1 downto 0);   -- data
+			be             : inout std_logic_vector(FT_be_width-1 downto 0);     -- byte_enable
+			txe_n          : in std_logic                                        -- tx_empty_n
         );
 end FT601;
 
@@ -180,7 +181,7 @@ begin
       case current_state is 
          when idle=>   
             data(31 downto 16)<=(others=>'1');
-            data(15 downto 8)<=(others=>'Z');
+            data(15 downto 8)<=(others=>'Z'); -- driven by the slave
             data(7 downto 0)<=(others=>'1');
             wr_n_sig<='1';
             be<=(others=>'1');
