@@ -49,13 +49,6 @@ entity FT601_top is
       EP82_wr        : in std_logic;
       EP82_wdata     : in std_logic_vector(EP82_wwidth-1 downto 0);
       EP82_wfull     : out std_logic;
-      --stream endpoint fifo PC->FPGA
-      EP03_aclrn     : in std_logic;
-      EP03_rdclk     : in std_logic;
-      EP03_rd        : in std_logic;
-      EP03_rdata     : out std_logic_vector(EP03_rwidth-1 downto 0) := (EP03_rwidth-1 downto 0 => '0');
-      EP03_rempty    : out std_logic := '0';
-      EP03_rusedw    : out std_logic_vector(EP03_rdusedw_width-1 downto 0) := (EP03_rdusedw_width-1 downto 0 => '0');
       --stream endpoint fifo FPGA->PC
       EP83_wclk      : in std_logic;
       EP83_aclrn     : in std_logic;

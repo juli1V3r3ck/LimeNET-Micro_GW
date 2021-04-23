@@ -219,9 +219,6 @@ signal inst2_ext_buff_data       : std_logic_vector(FTDI_DQ_WIDTH-1 downto 0);
 signal inst2_ext_buff_wr         : std_logic;
 signal inst2_EP82_wfull          : std_logic;
 signal inst2_EP82_wrusedw        : std_logic_vector(C_EP82_WRUSEDW_WIDTH-1 downto 0);
-signal inst2_EP03_rdata          : std_logic_vector(STRM0_FPGA_RX_RWIDTH-1 downto 0);
-signal inst2_EP03_rempty         : std_logic;
-signal inst2_EP03_rdusedw        : std_logic_vector(C_EP03_RDUSEDW_WIDTH-1 downto 0);
 signal inst2_EP83_wfull          : std_logic := '0';
 signal inst2_EP83_wrusedw        : std_logic_vector(C_EP83_WRUSEDW_WIDTH-1 downto 0);
 signal inst2_GPIF_busy           : std_logic;
@@ -260,7 +257,6 @@ signal inst6_rx_smpl_cmp_done       : std_logic;
 signal inst6_rx_smpl_cmp_err        : std_logic;
 signal inst6_to_tstcfg_from_rxtx    : t_TO_TSTCFG_FROM_RXTX;
 signal inst6_rx_pct_fifo_aclrn_req  : std_logic;
-signal inst6_tx_in_pct_rdreq        : std_logic;
 signal inst6_tx_in_pct_reset_n_req  : std_logic;
 signal inst6_wfm_in_pct_reset_n_req : std_logic;
 signal inst6_wfm_in_pct_rdreq       : std_logic;
@@ -525,13 +521,6 @@ begin
       EP82_wr        => inst0_exfifo_of_wr,
       EP82_wdata     => inst0_exfifo_of_d,
       EP82_wfull     => inst2_EP82_wfull,
-      --stream endpoint fifo PC->FPGA
-      EP03_aclrn     => inst0_from_fpgacfg.rx_en,
-      EP03_rdclk     => inst1_pll_c1,
-      EP03_rd        => inst6_tx_in_pct_rdreq,
-      EP03_rdata     => inst2_EP03_rdata,
-      EP03_rempty    => inst2_EP03_rempty,
-      EP03_rusedw    => inst2_EP03_rdusedw,
       --stream endpoint fifo FPGA->PC
       EP83_wclk      => inst1_pll_c3, 
       EP83_aclrn     => inst6_rx_pct_fifo_aclrn_req,
@@ -697,11 +686,6 @@ begin
       --Tx interface data 
       tx_DIQ                  => LMS_DIQ1_D,
       tx_fsync                => LMS_ENABLE_IQSEL1,
-      --fifo ports
-      tx_in_pct_rdreq         => inst6_tx_in_pct_rdreq,
-      tx_in_pct_data          => inst2_EP03_rdata,
-      tx_in_pct_rdempty       => inst2_EP03_rempty,
-      tx_in_pct_rdusedw       => inst2_EP03_rdusedw,
       
       -- RX path
       rx_clk                  => inst1_pll_c3,

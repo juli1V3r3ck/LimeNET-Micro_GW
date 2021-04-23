@@ -51,11 +51,6 @@ entity rxtx_top is
          -- Tx interface data 
       tx_DIQ                  : out    std_logic_vector(TX_IQ_WIDTH-1 downto 0) := (TX_IQ_WIDTH-1 downto 0 => '0');
       tx_fsync                : out    std_logic := '0';
-         -- TX FIFO read ports
-      tx_in_pct_rdreq         : out    std_logic := '0';
-      tx_in_pct_data          : in     std_logic_vector(TX_IN_PCT_DATA_W-1 downto 0);
-      tx_in_pct_rdempty       : in     std_logic;
-      tx_in_pct_rdusedw       : in     std_logic_vector(TX_IN_PCT_RDUSEDW_W-1 downto 0);
       
       -- RX path
       rx_clk                  : in     std_logic;
