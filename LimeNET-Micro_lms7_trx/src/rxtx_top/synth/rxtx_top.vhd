@@ -81,25 +81,15 @@ end rxtx_top;
 -- ----------------------------------------------------------------------------
 architecture arch of rxtx_top is
 --declare signals,  components here
-     
---inst0
-signal inst0_reset_n             : std_logic;
+
 --inst5
-signal inst5_reset_n             : std_logic;
 signal inst5_smpl_nr_cnt         : std_logic_vector(63 downto 0);
 signal inst5_pct_hdr_cap         : std_logic;
 
 begin
-   
-   -- Reset signal for inst0 with synchronous removal to tx_pct_clk clock domain, 
-   sync_reg0 : entity work.sync_reg 
-   port map(tx_clk, from_fpgacfg.rx_en, '1', inst0_reset_n);
-    
-   inst5_reset_n           <= inst0_reset_n;
-   
    -- Reset signal for inst0 with synchronous removal to rx_clk clock domain, 
    sync_reg1 : entity work.sync_reg 
-   port map(rx_clk, inst0_reset_n, '1', rx_pct_fifo_aclrn_req);
+   port map(rx_clk, from_fpgacfg.rx_en, '1', rx_pct_fifo_aclrn_req);
    
 -- ----------------------------------------------------------------------------
 -- rx_path_top instance instance.
@@ -115,7 +105,7 @@ begin
    )
    port map(
       clk                  => rx_clk,
-      reset_n              => inst5_reset_n,
+      reset_n              => from_fpgacfg.rx_en,
       test_ptrn_en         => from_fpgacfg.rx_ptrn_en,
       --Mode settings
       sample_width         => from_fpgacfg.smpl_width, --"10"-12bit, "01"-14bit, "00"-16bit;
