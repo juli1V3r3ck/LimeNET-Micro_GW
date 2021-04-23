@@ -53,9 +53,9 @@ entity FT601_top is
       EP03_aclrn     : in std_logic;
       EP03_rdclk     : in std_logic;
       EP03_rd        : in std_logic;
-      EP03_rdata     : out std_logic_vector(EP03_rwidth-1 downto 0);
-      EP03_rempty    : out std_logic;
-      EP03_rusedw    : out std_logic_vector(EP03_rdusedw_width-1 downto 0);
+      EP03_rdata     : out std_logic_vector(EP03_rwidth-1 downto 0) := (EP03_rwidth-1 downto 0 => '0');
+      EP03_rempty    : out std_logic := '0';
+      EP03_rusedw    : out std_logic_vector(EP03_rdusedw_width-1 downto 0) := (EP03_rdusedw_width-1 downto 0 => '0');
       --stream endpoint fifo FPGA->PC
       EP83_wclk      : in std_logic;
       EP83_aclrn     : in std_logic;
@@ -85,11 +85,9 @@ signal EP82_fifo_q         : std_logic_vector(FT_data_width-1 downto 0);
 signal EP82_fifo_rdreq     : std_logic;
 
 --EP03 fifo signals
-signal EP03_sclrn          : std_logic; 
-signal EP03_wrempty        : std_logic; 
+signal EP03_sclrn          : std_logic;
 signal EP03_wr             : std_logic;
 signal EP03_wdata          : std_logic_vector(FT_data_width-1 downto 0);
-signal EP03_rdy            : std_logic;
 
 --EP83 fifo signals
 signal EP83_fifo_rdusedw   : std_logic_vector(FIFORD_SIZE(EP83_wwidth, FT_data_width, EP83_wrusedw_width)-1 downto 0);
@@ -109,9 +107,6 @@ signal fsm_wr_data_req     : std_logic;
 signal fsm_wr_data         : std_logic_vector(FT_data_width-1 downto 0);
   
 begin
-
-   sync_reg0 : entity work.sync_reg 
-   port map(clk, EP03_aclrn, '1', EP03_sclrn);
    
 
 -- ----------------------------------------------------------------------------
@@ -166,32 +161,6 @@ begin
       rdempty  => open,
       rdusedw  => EP82_fifo_rdusedw           
    );
-
--- stream PC-> FPGA
-   EP03_fifo : entity work.fifo_inst   
-   generic map(
-      dev_family     => "MAX 10",
-      wrwidth        => FT_data_width, --32 bits ftdi side, 
-      wrusedw_witdth => FIFOWR_SIZE(FT_data_width, EP03_rwidth, EP03_rdusedw_width),      --10=512 words (2048kB)  
-      rdwidth        => EP03_rwidth,
-      rdusedw_width  => EP03_rdusedw_width,   
-      show_ahead     => "OFF"
-   )
-   port map(
-      reset_n     => EP03_sclrn,
-      wrclk       => clk,
-      wrreq       => EP03_wr,
-      data        => EP03_wdata,
-      wrfull      => open,
-      wrempty     => EP03_wrempty,
-      wrusedw     => open,
-      rdclk       => EP03_rdclk,
-      rdreq       => EP03_rd,
-      q           => EP03_rdata,
-      rdempty     => EP03_rempty,
-      rdusedw     => EP03_rusedw 
-   );
-   
    
 -- stream FPGA->PC
    EP83_fifo : entity work.fifo_inst   
@@ -217,19 +186,6 @@ begin
       rdempty  => open,
       rdusedw  => EP83_fifo_rdusedw           
    );
-
-   process(clk, reset_n)
-   begin
-      if reset_n = '0' then 
-         EP03_rdy <= '0';
-      elsif (clk'event AND clk='1') then 
-         if EP03_wrempty = '0' then 
-            EP03_rdy <= '0';
-         else 
-            EP03_rdy <= '1';
-         end if;
-      end if;
-   end process;
       
 -- ----------------------------------------------------------------------------
 -- FTDI arbiter
@@ -254,7 +210,7 @@ begin
       EP82_fifo_rdusedw => EP82_fifo_rdusedw,
       EP03_fifo_data    => EP03_wdata,
       EP03_fifo_wr      => EP03_wr,
-      EP03_fifo_wrempty => EP03_rdy,
+      EP03_fifo_wrempty => '1',
       EP83_fifo_data    => EP83_fifo_q,
       EP83_fifo_rd      => EP83_fifo_rdreq,	
       EP83_fifo_rdusedw => EP83_fifo_rdusedw,
