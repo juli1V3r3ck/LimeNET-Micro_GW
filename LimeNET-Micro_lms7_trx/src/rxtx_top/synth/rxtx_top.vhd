@@ -43,15 +43,6 @@ entity rxtx_top is
       from_fpgacfg            : in     t_FROM_FPGACFG;
       to_tstcfg_from_rxtx     : out    t_TO_TSTCFG_FROM_RXTX;
       from_tstcfg             : in     t_FROM_TSTCFG;
-      -- TX path
-      tx_clk                  : in     std_logic;
-      tx_clk_reset_n          : in     std_logic;    
-      tx_pct_loss_flg         : out    std_logic;
-      tx_txant_en             : out    std_logic := '0';  
-         -- Tx interface data 
-      tx_DIQ                  : out    std_logic_vector(TX_IQ_WIDTH-1 downto 0) := (TX_IQ_WIDTH-1 downto 0 => '0');
-      tx_fsync                : out    std_logic := '0';
-      
       -- RX path
       rx_clk                  : in     std_logic;
       rx_clk_reset_n          : in     std_logic;

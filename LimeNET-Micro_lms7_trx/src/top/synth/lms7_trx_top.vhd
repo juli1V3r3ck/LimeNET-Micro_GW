@@ -65,8 +65,8 @@ entity lms7_trx_top is
       LMS_MCLK1         : in     std_logic;
       LMS_FCLK1         : out    std_logic;
       LMS_TXNRX1        : out    std_logic;
-      LMS_ENABLE_IQSEL1 : out    std_logic;
-      LMS_DIQ1_D        : out    std_logic_vector(LMS_DIQ_WIDTH-1 downto 0);
+      LMS_ENABLE_IQSEL1 : out    std_logic := '0';
+      LMS_DIQ1_D        : out    std_logic_vector(LMS_DIQ_WIDTH-1 downto 0) := (LMS_DIQ_WIDTH-1 downto 0 => '0');
          -- PORT2
       LMS_MCLK2         : in     std_logic;
       LMS_FCLK2         : out    std_logic;
@@ -204,7 +204,6 @@ signal inst0_uart_txd            : std_logic;
 signal inst0_cfg_top_or_lms_ctrl_MISO  : std_logic;
 
 --inst1 (pll_top instance)
-signal inst1_pll_c1              : std_logic;
 signal inst1_pll_c3              : std_logic;
 signal inst1_pll_locked          : std_logic;
 signal inst1_pll_smpl_cmp_en     : std_logic;
@@ -248,8 +247,6 @@ signal FPGA_LED5_G,FPGA_LED5_R   : std_logic;
 signal inst5_busy : std_logic;
 
 --inst6
-signal inst6_tx_pct_loss_flg        : std_logic;
-signal inst6_tx_txant_en            : std_logic;
 signal inst6_tx_in_pct_full         : std_logic;
 signal inst6_rx_pct_fifo_wrreq      : std_logic;
 signal inst6_rx_pct_fifo_wdata      : std_logic_vector(63 downto 0);
@@ -463,7 +460,7 @@ begin
       pll_clk_ena          => inst0_from_fpgacfg.CLK_ENA(3 downto 0),
       pll_drct_clk_en      => inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0),
       pll_c0               => LMS_FCLK1,
-      pll_c1               => inst1_pll_c1,
+      pll_c1               => open,
       pll_c2               => LMS_FCLK2,
       pll_c3               => inst1_pll_c3,
       pll_locked           => inst1_pll_locked,
@@ -677,16 +674,6 @@ begin
       from_fpgacfg            => inst0_from_fpgacfg,
       to_tstcfg_from_rxtx     => inst6_to_tstcfg_from_rxtx,
       from_tstcfg             => inst0_from_tstcfg,
-      
-      -- TX module signals
-      tx_clk                  => inst1_pll_c1,
-      tx_clk_reset_n          => inst1_pll_locked,     
-      tx_pct_loss_flg         => inst6_tx_pct_loss_flg,
-      tx_txant_en             => inst6_tx_txant_en,  
-      --Tx interface data 
-      tx_DIQ                  => LMS_DIQ1_D,
-      tx_fsync                => LMS_ENABLE_IQSEL1,
-      
       -- RX path
       rx_clk                  => inst1_pll_c3,
       rx_clk_reset_n          => inst1_pll_locked,
