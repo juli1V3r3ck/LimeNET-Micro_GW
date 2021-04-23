@@ -31,7 +31,7 @@ entity Avalon_MM_external is
 		avm_m0_writedata     : out std_logic_vector(7 downto 0);                    --                .writedata
 		avm_m0_write         : out std_logic;                                       --                .write
 		clock_source_clk     : out std_logic                    := '0';             --    clock_source.clk
-		reset_source_reset   : out std_logic                    := '0';             --    reset_source.reset
+		reset_source_reset   : out std_logic                    := '0'              --    reset_source.reset
 	);
 end entity Avalon_MM_external;
 
