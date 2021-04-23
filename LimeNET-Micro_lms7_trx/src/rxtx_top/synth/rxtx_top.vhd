@@ -22,15 +22,6 @@ use work.tstcfg_pkg.all;
 entity rxtx_top is
    generic(
       DEV_FAMILY              : string := "Cyclone IV E";
-      -- TX parameters
-      TX_IQ_WIDTH             : integer := 12;
-      TX_N_BUFF               : integer := 4; -- 2,4 valid values
-      TX_IN_PCT_SIZE          : integer := 4096; -- TX packet size in bytes
-      TX_IN_PCT_HDR_SIZE      : integer := 16;
-      TX_IN_PCT_DATA_W        : integer := 128;
-      TX_IN_PCT_RDUSEDW_W     : integer := 11;
-      TX_OUT_PCT_DATA_W       : integer := 64;
-      
       -- RX parameters
       RX_IQ_WIDTH             : integer := 12;
       RX_INVERT_INPUT_CLOCKS  : string := "OFF";

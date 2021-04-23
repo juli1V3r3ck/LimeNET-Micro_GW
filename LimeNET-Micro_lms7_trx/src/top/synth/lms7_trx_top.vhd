@@ -37,14 +37,8 @@ entity lms7_trx_top is
       CTRL0_FPGA_RX_RWIDTH    : integer := 32;     -- Control PC->FPGA, FIFO rd width.
       CTRL0_FPGA_TX_SIZE      : integer := 1024;   -- Control FPGA->PC, FIFO size in bytes
       CTRL0_FPGA_TX_WWIDTH    : integer := 32;     -- Control FPGA->PC, FIFO wr width
-      STRM0_FPGA_RX_SIZE      : integer := 4096;   -- Stream PC->FPGA, FIFO size in bytes
-      STRM0_FPGA_RX_RWIDTH    : integer := 128;    -- Stream PC->FPGA, rd width
       STRM0_FPGA_TX_SIZE      : integer := 16384;  -- Stream FPGA->PC, FIFO size in bytes
       STRM0_FPGA_TX_WWIDTH    : integer := 64;     -- Stream FPGA->PC, wr width
-      -- 
-      TX_N_BUFF               : integer := 4;      -- N 4KB buffers in TX interface (2 OR 4)
-      TX_PCT_SIZE             : integer := 4096;   -- TX packet size in bytes
-      TX_IN_PCT_HDR_SIZE      : integer := 16;
       -- Internal configuration memory 
       FPGACFG_START_ADDR      : integer := 0;
       PLLCFG_START_ADDR       : integer := 32;
@@ -212,7 +206,6 @@ signal inst1_pll_smpl_cmp_cnt    : std_logic_vector(15 downto 0);
 --inst2
 constant C_EP02_RDUSEDW_WIDTH    : integer := FIFO_WORDS_TO_Nbits(CTRL0_FPGA_RX_SIZE/(CTRL0_FPGA_RX_RWIDTH/8),true);
 constant C_EP82_WRUSEDW_WIDTH    : integer := FIFO_WORDS_TO_Nbits(CTRL0_FPGA_TX_SIZE/(CTRL0_FPGA_TX_WWIDTH/8),true);
-constant C_EP03_RDUSEDW_WIDTH    : integer := FIFO_WORDS_TO_Nbits(STRM0_FPGA_RX_SIZE/(STRM0_FPGA_RX_RWIDTH/8),true);
 constant C_EP83_WRUSEDW_WIDTH    : integer := FIFO_WORDS_TO_Nbits(STRM0_FPGA_TX_SIZE/(STRM0_FPGA_TX_WWIDTH/8),true);
 signal inst2_ext_buff_data       : std_logic_vector(FTDI_DQ_WIDTH-1 downto 0);
 signal inst2_ext_buff_wr         : std_logic;
@@ -491,8 +484,6 @@ begin
       EP82_wrusedw_width   => C_EP82_WRUSEDW_WIDTH,
       EP82_wwidth          => CTRL0_FPGA_TX_WWIDTH,
       EP82_wsize           => 64,  --packet size in bytes, has to be multiple of 4 bytes
-      EP03_rdusedw_width   => C_EP03_RDUSEDW_WIDTH,    
-      EP03_rwidth          => STRM0_FPGA_RX_RWIDTH,
       EP83_wrusedw_width   => C_EP83_WRUSEDW_WIDTH,
       EP83_wwidth          => STRM0_FPGA_TX_WWIDTH,
       EP83_wsize           => 2048 --packet size in bytes, has to be multiple of 4 bytes	
@@ -656,14 +647,6 @@ begin
    inst6_rxtx_top : entity work.rxtx_top
    generic map(
       DEV_FAMILY              => DEV_FAMILY,
-      -- TX parameters
-      TX_IQ_WIDTH             => LMS_DIQ_WIDTH,
-      TX_N_BUFF               => TX_N_BUFF,              -- 2,4 valid values
-      TX_IN_PCT_SIZE          => TX_PCT_SIZE,
-      TX_IN_PCT_HDR_SIZE      => TX_IN_PCT_HDR_SIZE,
-      TX_IN_PCT_DATA_W        => STRM0_FPGA_RX_RWIDTH,      -- 
-      TX_IN_PCT_RDUSEDW_W     => C_EP03_RDUSEDW_WIDTH,
-      
       -- RX parameters
       RX_IQ_WIDTH             => LMS_DIQ_WIDTH,
       RX_INVERT_INPUT_CLOCKS  => "ON",

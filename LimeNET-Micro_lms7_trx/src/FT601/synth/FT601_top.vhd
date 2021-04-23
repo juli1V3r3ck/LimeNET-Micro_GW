@@ -22,8 +22,6 @@ entity FT601_top is
       EP82_wrusedw_width   : integer := 11;
       EP82_wwidth          : integer := 8;
       EP82_wsize           : integer := 64;  --packet size in bytes, has to be multiple of 4 bytes
-      EP03_rdusedw_width   : integer := 11;    
-      EP03_rwidth          : integer := 32;
       EP83_wrusedw_width   : integer := 12;
       EP83_wwidth          : integer := 64;
       EP83_wsize           : integer := 2048 --packet size in bytes, has to be multiple of 4 bytes	
