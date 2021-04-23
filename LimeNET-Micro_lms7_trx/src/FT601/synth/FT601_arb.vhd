@@ -33,10 +33,6 @@ entity FT601_arb is
       EP82_fifo_data    : in std_logic_vector(FT_data_width-1 downto 0);
       EP82_fifo_rd      : out std_logic;
       EP82_fifo_rdusedw : in std_logic_vector(EP82_fifo_rwidth-1 downto 0);
-      --stream EP PC->FPGA
-      EP03_fifo_data    : out std_logic_vector(FT_data_width-1 downto 0);
-      EP03_fifo_wr      : out std_logic;
-      EP03_fifo_wrempty : in std_logic;		
       --stream EP FPGA->PC
       EP83_fifo_data    : in std_logic_vector(FT_data_width-1 downto 0);
       EP83_fifo_rd      : out std_logic;
@@ -51,7 +47,7 @@ entity FT601_arb is
       fsm_wrdata_req    : in std_logic;
       fsm_wrdata        : out std_logic_vector(FT_data_width-1 downto 0);
       
-      ep_status         : in std_logic_vector(7 downto 0) -- 0 - EP is ready
+      ep_status         : in std_logic_vector(7 downto 0) -- 0 - EP is ready - Upper nibble: out, lower nibble: in
         
         );
 end FT601_arb;
@@ -61,11 +57,11 @@ end FT601_arb;
 -- ----------------------------------------------------------------------------
 architecture arch of FT601_arb is
 
-type state_type is (idle, check_priority, check_ep02, check_ep82, check_ep03, check_ep83, 
-                    go_ep02, go_ep82, go_ep03, go_ep83);
+type state_type is (idle, check_priority, check_ep02, check_ep82, check_ep83, 
+                    go_ep02, go_ep82, go_ep83);
 signal current_state, next_state : state_type;
 
-signal en_ep02, en_ep82, en_ep03, en_ep83 : std_logic;
+signal en_ep02, en_ep82, en_ep83 : std_logic;
 
 signal ep_priority	: unsigned(1 downto 0);
 signal ep_checked		: std_logic;
@@ -75,51 +71,30 @@ signal ep_checked		: std_logic;
 begin
   
 --endpoint ready signals, indicates when transfer can occur
-en_ep02<='1' when EP02_fifo_wrempty='1'                     and ep_status(4)='0'	and fsm_rdy='1' else '0';
+en_ep02<='1' when EP02_fifo_wrempty='1'                                     and ep_status(4)='0'	and fsm_rdy='1' else '0';
 en_ep82<='1' when unsigned(EP82_fifo_rdusedw)>=EP82_wsize/(FT_data_width/8) and ep_status(0)='0'	and fsm_rdy='1' else '0';
-en_ep03<='1' when EP03_fifo_wrempty='1'                     and ep_status(5)='0'	and fsm_rdy='1' else '0';
 en_ep83<='1' when unsigned(EP83_fifo_rdusedw)>=EP83_wsize/(FT_data_width/8) and ep_status(1)='0'	and fsm_rdy='1' else '0';
 
 --indicates when endpoint status was checked
-ep_checked<='1' when current_state=check_ep02 or current_state=check_ep82 or
-							current_state=check_ep03 or current_state=check_ep83 else '0';
+ep_checked<='1' when current_state=check_ep02 or current_state=check_ep82 or current_state=check_ep83 else '0';
 							
 --endpoint fifo signals							
+EP83_fifo_rd      <= fsm_wrdata_req     when ep_priority=0 else '0';
+
 EP02_fifo_wr      <= fsm_rddata_valid   when ep_priority=1 else '0';
 EP02_fifo_data    <= fsm_rddata;
 
 EP82_fifo_rd      <= fsm_wrdata_req     when ep_priority=2 else '0';
 
-EP03_fifo_wr      <= fsm_rddata_valid   when ep_priority=3 else '0';
-EP03_fifo_data    <= fsm_rddata;
-
-EP83_fifo_rd      <= fsm_wrdata_req     when ep_priority=0 else '0';
-
-
---fsm_wrdata		 <=EP82_fifo_data when ep_priority=2 else 
---						EP83_fifo_data when ep_priority=0 else (others=>'0');
-
 fsm_wrdata		   <= EP82_fifo_data when ep_priority=2 else 
                      EP83_fifo_data;
-
--- process(clk)
--- begin 
-   -- if (clk'event AND clk = '1') then 
-      -- if ep_priority=2 then
-         -- fsm_wrdata <= EP82_fifo_data;
-      -- else
-         -- fsm_wrdata <= EP83_fifo_data;
-      -- end if;
-   -- end if;
--- end process;
 
 -- ----------------------------------------------------------------------------
 --Transfer start signal to FTDI FSM
 -- ----------------------------------------------------------------------------
 process(current_state)
   begin 
-    if current_state=go_ep02 OR current_state=go_ep82 OR 
-        current_state=go_ep03 OR current_state=go_ep83 then 
+    if current_state=go_ep02 OR current_state=go_ep82 OR current_state=go_ep83 then 
       fsm_epgo<='1';
     else 
       fsm_epgo<='0';
@@ -131,7 +106,7 @@ end process;
 -- ----------------------------------------------------------------------------
 process(current_state)
   begin 
-    if current_state=go_ep02 OR current_state=go_ep03 then 
+    if current_state=go_ep02 then 
       fsm_rdwr<='0';
     else 
       fsm_rdwr<='1';
@@ -158,7 +133,11 @@ process(clk, reset_n)begin
 		ep_priority<=(others=>'0');
 	elsif(clk'event and clk = '1')then
 		if ep_checked='1' then 
-			ep_priority<=ep_priority+1;
+			if ep_priority(1)='1' then -- only three states in RX only mode
+				ep_priority<=(others=>'0');
+			else
+				ep_priority<=ep_priority+1;
+			end if;
 		else 
 			ep_priority<=ep_priority;
 		end if;	
@@ -181,7 +160,7 @@ end process;
 -- ----------------------------------------------------------------------------
 --state machine combo
 -- ----------------------------------------------------------------------------
-fsm : process(current_state, enable, fsm_rdy, en_ep02, en_ep82, en_ep03, en_ep83, ep_priority) begin
+fsm : process(current_state, enable, fsm_rdy, en_ep02, en_ep82, en_ep83, ep_priority) begin
 	next_state <= current_state;
 	case current_state is
 	  
@@ -198,8 +177,6 @@ fsm : process(current_state, enable, fsm_rdy, en_ep02, en_ep82, en_ep03, en_ep83
 		      next_state<=check_ep02; 
 		    elsif ep_priority=1 then 
 		      next_state<=check_ep82; 
-		    elsif ep_priority=2 then
-		      next_state<=check_ep03; 
 		    else 
 		      next_state<=check_ep83;	    
 		    end if;
@@ -217,13 +194,6 @@ fsm : process(current_state, enable, fsm_rdy, en_ep02, en_ep82, en_ep03, en_ep83
 		when check_ep82 =>  				-- check EP82 status
 				if en_ep82='1' then 
 					next_state<=go_ep82;
-				else 
-					next_state<=check_priority;
-				end if;
-				
-		when check_ep03 =>				-- check EP03 status
-				if en_ep03='1' then 
-				  next_state<=go_ep03;
 				else 
 					next_state<=check_priority;
 				end if;
@@ -251,14 +221,7 @@ fsm : process(current_state, enable, fsm_rdy, en_ep02, en_ep82, en_ep03, en_ep83
 				next_state<=check_priority;
 			else 
 				next_state<=go_ep82;
-			end if;			
-			
-		when go_ep03 =>					--start transfer from EP03
-			if fsm_rdy='0' then 
-				next_state<=check_priority;
-			else 
-				next_state<=go_ep03;
-			end if; 
+			end if;   
 			
 		when go_ep83 =>					--start transfer from EP83
 			if fsm_rdy='0' then 

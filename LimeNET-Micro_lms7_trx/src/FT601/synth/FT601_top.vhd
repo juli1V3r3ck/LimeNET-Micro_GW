@@ -70,15 +70,11 @@ architecture arch of FT601_top is
 signal EP02_wrempty        : std_logic;
 signal EP02_wr             : std_logic; 
 signal EP02_wdata          : std_logic_vector(FT_data_width-1 downto 0);
+
 --EP82 fifo signals
 signal EP82_fifo_rdusedw   : std_logic_vector(FIFORD_SIZE(EP82_wwidth, FT_data_width, EP82_wrusedw_width)-1 downto 0);
 signal EP82_fifo_q         : std_logic_vector(FT_data_width-1 downto 0);
 signal EP82_fifo_rdreq     : std_logic;
-
---EP03 fifo signals
-signal EP03_sclrn          : std_logic;
-signal EP03_wr             : std_logic;
-signal EP03_wdata          : std_logic_vector(FT_data_width-1 downto 0);
 
 --EP83 fifo signals
 signal EP83_fifo_rdusedw   : std_logic_vector(FIFORD_SIZE(EP83_wwidth, FT_data_width, EP83_wrusedw_width)-1 downto 0);
@@ -199,9 +195,6 @@ begin
       EP82_fifo_data    => EP82_fifo_q,
       EP82_fifo_rd      => EP82_fifo_rdreq,
       EP82_fifo_rdusedw => EP82_fifo_rdusedw,
-      EP03_fifo_data    => EP03_wdata,
-      EP03_fifo_wr      => EP03_wr,
-      EP03_fifo_wrempty => '1',
       EP83_fifo_data    => EP83_fifo_q,
       EP83_fifo_rd      => EP83_fifo_rdreq,	
       EP83_fifo_rdusedw => EP83_fifo_rdusedw,
@@ -254,7 +247,7 @@ begin
       if reset_n = '0' then 
          EP_act <= '0';
       elsif (clk'event AND clk='1') then 
-         EP_act <= EP02_wr OR EP82_fifo_rdreq OR EP03_wr OR EP83_fifo_rdreq;
+         EP_act <= EP02_wr OR EP82_fifo_rdreq OR EP83_fifo_rdreq;
       end if;
    end process;
    
