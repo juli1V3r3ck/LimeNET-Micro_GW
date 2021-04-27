@@ -90,7 +90,9 @@ signal smpl_cmp_length_sync   : std_logic_vector(15 downto 0);
 --inst0 
 signal inst0_fifo_wrreq       : std_logic;
 signal inst0_fifo_wdata       : std_logic_vector(iq_width*4-1 downto 0);
-signal inst0_smpl_cnt_en      : std_logic;
+--inst11 
+signal inst11_fifo_wrreq      : std_logic;
+signal inst11_fifo_wdata      : std_logic_vector(iq_width*4-1 downto 0);
 --inst1
 signal inst1_wrfull           : std_logic;
 signal inst1_q                : std_logic_vector(iq_width*4-1 downto 0);
@@ -111,6 +113,17 @@ signal tx_pct_loss_detect     : std_logic;
 
 
 
+component lms_dsp is
+  port (
+		clk_clk         : in  std_logic                     := 'X';             -- clk
+		dsp_en_en       : in  std_logic                     := 'X';             -- en
+		fifo_in_wdata   : in  std_logic_vector(47 downto 0) := (others => 'X'); -- wdata
+		fifo_in_wrreq   : in  std_logic                     := 'X';             -- wrreq
+		fifo_out_wrdata : out std_logic_vector(47 downto 0);                    -- wrdata
+		fifo_out_wrreq  : out std_logic;                                        -- wrreq
+		reset_reset_n   : in  std_logic                     := 'X'              -- reset_n
+  );
+end component lms_dsp;
 
 
 begin
@@ -198,19 +211,34 @@ diq2fifo_inst0 : entity work.diq2fifo
       fsync             => fsync,
       --fifo ports 
       fifo_wfull        => inst1_wrfull,
-      fifo_wrreq        => inst0_fifo_wrreq,
-      fifo_wdata        => inst0_fifo_wdata, 
+      fifo_wrreq        => inst11_fifo_wrreq,
+      fifo_wdata        => inst11_fifo_wdata, 
       smpl_cmp_start    => smpl_cmp_start_sync,
       smpl_cmp_length   => smpl_cmp_length_sync,
       smpl_cmp_done     => smpl_cmp_done,
       smpl_cmp_err      => smpl_cmp_err,
-      smpl_cnt_en       => inst0_smpl_cnt_en
+      smpl_cnt_en       => open
         );
         
         
 smpl_fifo_wrreq_out <= inst0_fifo_wrreq; 
         
-               
+
+-- ----------------------------------------------------------------------------
+-- DSP Subsystem
+-- ----------------------------------------------------------------------------
+
+dsp_subsystem_inst11 : component lms_dsp
+  port map (
+		clk_clk         => clk,                 --      clk.clk
+		dsp_en_en       => '0',                 --   dsp_en.en
+		fifo_in_wdata   => inst11_fifo_wdata,   --  fifo_in.wdata
+		fifo_in_wrreq   => inst11_fifo_wrreq,   --         .wrreq
+		fifo_out_wrdata => inst0_fifo_wdata,    -- fifo_out.wrdata
+		fifo_out_wrreq  => inst0_fifo_wrreq,    --         .wrreq
+		reset_reset_n   => reset_n_sync         --    reset.reset_n
+  );
+
 -- ----------------------------------------------------------------------------
 -- FIFO for storing samples
 -- ----------------------------------------------------------------------------       
@@ -299,50 +327,23 @@ smpl_cnt_inst3 : entity work.smpl_cnt
       cnt_en      => inst2_smpl_buff_rdreq,
       q           => inst3_q        
         );
- 
--- ----------------------------------------------------------------------------
--- Instance for sample counter
--- ----------------------------------------------------------------------------        
-iq_smpl_cnt_inst4 : entity work.iq_smpl_cnt
-   generic map(
-      cnt_width   => 64
-   )
-   port map(
-
-      clk         => clk,
-      reset_n     => reset_n_sync,
-      mode        => mode_sync,
-      trxiqpulse  => trxiqpulse_sync,
-      ddr_en      => ddr_en_sync,
-      mimo_en     => mimo_en_sync,
-      ch_en       => ch_en_sync,
-      sclr        => clr_smpl_nr_sync,
-      sload       => ld_smpl_nr_sync,
-      data        => smpl_nr_in_sync,
-      cnt_en      => inst0_smpl_cnt_en,
-      q           => smpl_nr_cnt        
-        );
         
 -- ----------------------------------------------------------------------------
 -- There is 6 clock cycle latency from smpl_fifo_inst1 to packet formation
 -- and smpl_cnt has to be delayed 6 cycles
--- ----------------------------------------------------------------------------        
-delay_registers : process(clk, reset_n)
-begin
-   if reset_n = '0' then 
-      delay_chain <= (others=>(others=>'0'));
-   elsif (clk'event AND clk='1') then 
-      for i in 0 to 5 loop
-         if i=0 then 
-            delay_chain(i) <= inst3_q;
-         else 
-            delay_chain(i) <= delay_chain(i-1);
-         end if;
-      end loop;
-   end if;
-end process;
-        
- inst2_pct_hdr_1 <=  delay_chain(5);      
+-- ----------------------------------------------------------------------------  
+
+delay_chain_inst5 : entity work.delay_chain
+   generic map(
+      delay   => 6,
+		data_width => 64
+   )
+   port map(
+      clk         => clk,
+      reset_n     => reset_n_sync,
+      data_in     => inst3_q,
+      data_out    => inst2_pct_hdr_1
+);    
   
 end arch;   
 
