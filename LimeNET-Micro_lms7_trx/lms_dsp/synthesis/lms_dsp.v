@@ -4,40 +4,121 @@
 
 `timescale 1 ps / 1 ps
 module lms_dsp (
-		input  wire        clk_clk,                          //                        clk.clk
-		input  wire [23:0] fir_avs_sink_data,                //               fir_avs_sink.data
-		input  wire        fir_avs_sink_valid,               //                           .valid
-		input  wire [1:0]  fir_avs_sink_error,               //                           .error
-		output wire [23:0] preamble_detect_avs_source_data,  // preamble_detect_avs_source.data
-		output wire        preamble_detect_avs_source_valid, //                           .valid
-		input  wire        reset_reset_n                     //                      reset.reset_n
+		input  wire        clk_clk,         //      clk.clk
+		input  wire        dsp_en_en,       //   dsp_en.en
+		input  wire [47:0] fifo_in_wdata,   //  fifo_in.wdata
+		input  wire        fifo_in_wrreq,   //         .wrreq
+		output wire [47:0] fifo_out_wrdata, // fifo_out.wrdata
+		output wire        fifo_out_wrreq,  //         .wrreq
+		input  wire        reset_reset_n    //    reset.reset_n
 	);
 
+	wire         demultiplexer_0_out0_valid;                      // demultiplexer_0:out0_valid -> multiplexer_0:in0_valid
+	wire  [47:0] demultiplexer_0_out0_data;                       // demultiplexer_0:out0_data -> multiplexer_0:in0_data
+	wire         demultiplexer_0_out0_ready;                      // multiplexer_0:in0_ready -> demultiplexer_0:out0_ready
 	wire         fir_compiler_ii_0_avalon_streaming_source_valid; // fir_compiler_ii_0:ast_source_valid -> avalon_st_adapter:in_0_valid
 	wire  [23:0] fir_compiler_ii_0_avalon_streaming_source_data;  // fir_compiler_ii_0:ast_source_data -> avalon_st_adapter:in_0_data
 	wire   [1:0] fir_compiler_ii_0_avalon_streaming_source_error; // fir_compiler_ii_0:ast_source_error -> avalon_st_adapter:in_0_error
 	wire         avalon_st_adapter_out_0_valid;                   // avalon_st_adapter:out_0_valid -> Preamble_detect_0:avalon_streaming_sink_valid
 	wire  [23:0] avalon_st_adapter_out_0_data;                    // avalon_st_adapter:out_0_data -> Preamble_detect_0:avalon_streaming_sink_data
-	wire         rst_controller_reset_out_reset;                  // rst_controller:reset_out -> [Preamble_detect_0:reset_sink_reset, avalon_st_adapter:in_rst_0_reset, fir_compiler_ii_0:reset_n]
+	wire         fifo2avs_0_avalon_streaming_source_valid;        // FIFO2AVS_0:avalon_streaming_source_valid -> avalon_st_adapter_001:in_0_valid
+	wire  [47:0] fifo2avs_0_avalon_streaming_source_data;         // FIFO2AVS_0:avalon_streaming_source_data -> avalon_st_adapter_001:in_0_data
+	wire         fifo2avs_0_avalon_streaming_source_channel;      // FIFO2AVS_0:avalon_streaming_source_channel -> avalon_st_adapter_001:in_0_channel
+	wire         avalon_st_adapter_001_out_0_valid;               // avalon_st_adapter_001:out_0_valid -> demultiplexer_0:in_valid
+	wire  [47:0] avalon_st_adapter_001_out_0_data;                // avalon_st_adapter_001:out_0_data -> demultiplexer_0:in_data
+	wire         avalon_st_adapter_001_out_0_ready;               // demultiplexer_0:in_ready -> avalon_st_adapter_001:out_0_ready
+	wire         avalon_st_adapter_001_out_0_channel;             // avalon_st_adapter_001:out_0_channel -> demultiplexer_0:in_channel
+	wire         preamble_detect_0_avalon_streaming_source_valid; // Preamble_detect_0:avalon_streaming_source_valid -> avalon_st_adapter_002:in_0_valid
+	wire  [23:0] preamble_detect_0_avalon_streaming_source_data;  // Preamble_detect_0:avalon_streaming_source_data -> avalon_st_adapter_002:in_0_data
+	wire         avalon_st_adapter_002_out_0_valid;               // avalon_st_adapter_002:out_0_valid -> multiplexer_0:in1_valid
+	wire  [47:0] avalon_st_adapter_002_out_0_data;                // avalon_st_adapter_002:out_0_data -> multiplexer_0:in1_data
+	wire         avalon_st_adapter_002_out_0_ready;               // multiplexer_0:in1_ready -> avalon_st_adapter_002:out_0_ready
+	wire         multiplexer_0_out_valid;                         // multiplexer_0:out_valid -> avalon_st_adapter_003:in_0_valid
+	wire  [47:0] multiplexer_0_out_data;                          // multiplexer_0:out_data -> avalon_st_adapter_003:in_0_data
+	wire         multiplexer_0_out_ready;                         // avalon_st_adapter_003:in_0_ready -> multiplexer_0:out_ready
+	wire         multiplexer_0_out_channel;                       // multiplexer_0:out_channel -> avalon_st_adapter_003:in_0_channel
+	wire         avalon_st_adapter_003_out_0_valid;               // avalon_st_adapter_003:out_0_valid -> AVS2FIFO_0:avalon_streaming_sink_valid
+	wire  [47:0] avalon_st_adapter_003_out_0_data;                // avalon_st_adapter_003:out_0_data -> AVS2FIFO_0:avalon_streaming_sink_data
+	wire         demultiplexer_0_out1_valid;                      // demultiplexer_0:out1_valid -> avalon_st_adapter_004:in_0_valid
+	wire  [47:0] demultiplexer_0_out1_data;                       // demultiplexer_0:out1_data -> avalon_st_adapter_004:in_0_data
+	wire         demultiplexer_0_out1_ready;                      // avalon_st_adapter_004:in_0_ready -> demultiplexer_0:out1_ready
+	wire         avalon_st_adapter_004_out_0_valid;               // avalon_st_adapter_004:out_0_valid -> fir_compiler_ii_0:ast_sink_valid
+	wire  [23:0] avalon_st_adapter_004_out_0_data;                // avalon_st_adapter_004:out_0_data -> fir_compiler_ii_0:ast_sink_data
+	wire   [1:0] avalon_st_adapter_004_out_0_error;               // avalon_st_adapter_004:out_0_error -> fir_compiler_ii_0:ast_sink_error
+	wire         rst_controller_reset_out_reset;                  // rst_controller:reset_out -> [AVS2FIFO_0:reset_sink_reset, FIFO2AVS_0:reset_sink_reset, Preamble_detect_0:reset_sink_reset, avalon_st_adapter:in_rst_0_reset, avalon_st_adapter_001:in_rst_0_reset, avalon_st_adapter_002:in_rst_0_reset, avalon_st_adapter_003:in_rst_0_reset, avalon_st_adapter_004:in_rst_0_reset, demultiplexer_0:reset_n, fir_compiler_ii_0:reset_n, multiplexer_0:reset_n]
+
+	avs2fifo #(
+		.datawidth (48)
+	) avs2fifo_0 (
+		.clock_sink_clk              (clk_clk),                           //            clock_sink.clk
+		.reset_sink_reset            (rst_controller_reset_out_reset),    //            reset_sink.reset
+		.avalon_streaming_sink_data  (avalon_st_adapter_003_out_0_data),  // avalon_streaming_sink.data
+		.avalon_streaming_sink_valid (avalon_st_adapter_003_out_0_valid), //                      .valid
+		.fifo_wrdata                 (fifo_out_wrdata),                   //           conduit_end.wrdata
+		.fifo_wrreq                  (fifo_out_wrreq)                     //                      .wrreq
+	);
+
+	fifo2avs #(
+		.datawidth (48)
+	) fifo2avs_0 (
+		.avalon_streaming_source_data    (fifo2avs_0_avalon_streaming_source_data),    // avalon_streaming_source.data
+		.avalon_streaming_source_valid   (fifo2avs_0_avalon_streaming_source_valid),   //                        .valid
+		.avalon_streaming_source_channel (fifo2avs_0_avalon_streaming_source_channel), //                        .channel
+		.clock_sink_clk                  (clk_clk),                                    //              clock_sink.clk
+		.reset_sink_reset                (rst_controller_reset_out_reset),             //              reset_sink.reset
+		.fifo_wdata                      (fifo_in_wdata),                              //              conduit_in.wdata
+		.fifo_wrreq                      (fifo_in_wrreq),                              //                        .wrreq
+		.datapath_en                     (dsp_en_en)                                   //           datapath_ctrl.en
+	);
 
 	preamble_detect preamble_detect_0 (
-		.clock_sink_clk                (clk_clk),                          //              clock_sink.clk
-		.reset_sink_reset              (rst_controller_reset_out_reset),   //              reset_sink.reset
-		.avalon_streaming_sink_data    (avalon_st_adapter_out_0_data),     //   avalon_streaming_sink.data
-		.avalon_streaming_sink_valid   (avalon_st_adapter_out_0_valid),    //                        .valid
-		.avalon_streaming_source_data  (preamble_detect_avs_source_data),  // avalon_streaming_source.data
-		.avalon_streaming_source_valid (preamble_detect_avs_source_valid)  //                        .valid
+		.clock_sink_clk                (clk_clk),                                         //              clock_sink.clk
+		.reset_sink_reset              (rst_controller_reset_out_reset),                  //              reset_sink.reset
+		.avalon_streaming_sink_data    (avalon_st_adapter_out_0_data),                    //   avalon_streaming_sink.data
+		.avalon_streaming_sink_valid   (avalon_st_adapter_out_0_valid),                   //                        .valid
+		.avalon_streaming_source_data  (preamble_detect_0_avalon_streaming_source_data),  // avalon_streaming_source.data
+		.avalon_streaming_source_valid (preamble_detect_0_avalon_streaming_source_valid)  //                        .valid
+	);
+
+	lms_dsp_demultiplexer_0 demultiplexer_0 (
+		.clk        (clk_clk),                             //   clk.clk
+		.reset_n    (~rst_controller_reset_out_reset),     // reset.reset_n
+		.in_data    (avalon_st_adapter_001_out_0_data),    //    in.data
+		.in_valid   (avalon_st_adapter_001_out_0_valid),   //      .valid
+		.in_ready   (avalon_st_adapter_001_out_0_ready),   //      .ready
+		.in_channel (avalon_st_adapter_001_out_0_channel), //      .channel
+		.out0_data  (demultiplexer_0_out0_data),           //  out0.data
+		.out0_valid (demultiplexer_0_out0_valid),          //      .valid
+		.out0_ready (demultiplexer_0_out0_ready),          //      .ready
+		.out1_data  (demultiplexer_0_out1_data),           //  out1.data
+		.out1_valid (demultiplexer_0_out1_valid),          //      .valid
+		.out1_ready (demultiplexer_0_out1_ready)           //      .ready
 	);
 
 	lms_dsp_fir_compiler_ii_0 fir_compiler_ii_0 (
 		.clk              (clk_clk),                                         //                     clk.clk
 		.reset_n          (~rst_controller_reset_out_reset),                 //                     rst.reset_n
-		.ast_sink_data    (fir_avs_sink_data),                               //   avalon_streaming_sink.data
-		.ast_sink_valid   (fir_avs_sink_valid),                              //                        .valid
-		.ast_sink_error   (fir_avs_sink_error),                              //                        .error
+		.ast_sink_data    (avalon_st_adapter_004_out_0_data),                //   avalon_streaming_sink.data
+		.ast_sink_valid   (avalon_st_adapter_004_out_0_valid),               //                        .valid
+		.ast_sink_error   (avalon_st_adapter_004_out_0_error),               //                        .error
 		.ast_source_data  (fir_compiler_ii_0_avalon_streaming_source_data),  // avalon_streaming_source.data
 		.ast_source_valid (fir_compiler_ii_0_avalon_streaming_source_valid), //                        .valid
 		.ast_source_error (fir_compiler_ii_0_avalon_streaming_source_error)  //                        .error
+	);
+
+	lms_dsp_multiplexer_0 multiplexer_0 (
+		.clk         (clk_clk),                           //   clk.clk
+		.reset_n     (~rst_controller_reset_out_reset),   // reset.reset_n
+		.out_data    (multiplexer_0_out_data),            //   out.data
+		.out_valid   (multiplexer_0_out_valid),           //      .valid
+		.out_ready   (multiplexer_0_out_ready),           //      .ready
+		.out_channel (multiplexer_0_out_channel),         //      .channel
+		.in0_data    (demultiplexer_0_out0_data),         //   in0.data
+		.in0_valid   (demultiplexer_0_out0_valid),        //      .valid
+		.in0_ready   (demultiplexer_0_out0_ready),        //      .ready
+		.in1_data    (avalon_st_adapter_002_out_0_data),  //   in1.data
+		.in1_valid   (avalon_st_adapter_002_out_0_valid), //      .valid
+		.in1_ready   (avalon_st_adapter_002_out_0_ready)  //      .ready
 	);
 
 	lms_dsp_avalon_st_adapter #(
@@ -65,6 +146,118 @@ module lms_dsp (
 		.in_0_error     (fir_compiler_ii_0_avalon_streaming_source_error), //         .error
 		.out_0_data     (avalon_st_adapter_out_0_data),                    //    out_0.data
 		.out_0_valid    (avalon_st_adapter_out_0_valid)                    //         .valid
+	);
+
+	lms_dsp_avalon_st_adapter_001 #(
+		.inBitsPerSymbol (12),
+		.inUsePackets    (0),
+		.inDataWidth     (48),
+		.inChannelWidth  (1),
+		.inErrorWidth    (0),
+		.inUseEmptyPort  (0),
+		.inUseValid      (1),
+		.inUseReady      (0),
+		.inReadyLatency  (0),
+		.outDataWidth    (48),
+		.outChannelWidth (1),
+		.outErrorWidth   (0),
+		.outUseEmptyPort (0),
+		.outUseValid     (1),
+		.outUseReady     (1),
+		.outReadyLatency (0)
+	) avalon_st_adapter_001 (
+		.in_clk_0_clk   (clk_clk),                                    // in_clk_0.clk
+		.in_rst_0_reset (rst_controller_reset_out_reset),             // in_rst_0.reset
+		.in_0_data      (fifo2avs_0_avalon_streaming_source_data),    //     in_0.data
+		.in_0_valid     (fifo2avs_0_avalon_streaming_source_valid),   //         .valid
+		.in_0_channel   (fifo2avs_0_avalon_streaming_source_channel), //         .channel
+		.out_0_data     (avalon_st_adapter_001_out_0_data),           //    out_0.data
+		.out_0_valid    (avalon_st_adapter_001_out_0_valid),          //         .valid
+		.out_0_ready    (avalon_st_adapter_001_out_0_ready),          //         .ready
+		.out_0_channel  (avalon_st_adapter_001_out_0_channel)         //         .channel
+	);
+
+	lms_dsp_avalon_st_adapter_002 #(
+		.inBitsPerSymbol (12),
+		.inUsePackets    (0),
+		.inDataWidth     (24),
+		.inChannelWidth  (0),
+		.inErrorWidth    (0),
+		.inUseEmptyPort  (0),
+		.inUseValid      (1),
+		.inUseReady      (0),
+		.inReadyLatency  (0),
+		.outDataWidth    (48),
+		.outChannelWidth (0),
+		.outErrorWidth   (0),
+		.outUseEmptyPort (0),
+		.outUseValid     (1),
+		.outUseReady     (1),
+		.outReadyLatency (0)
+	) avalon_st_adapter_002 (
+		.in_clk_0_clk   (clk_clk),                                         // in_clk_0.clk
+		.in_rst_0_reset (rst_controller_reset_out_reset),                  // in_rst_0.reset
+		.in_0_data      (preamble_detect_0_avalon_streaming_source_data),  //     in_0.data
+		.in_0_valid     (preamble_detect_0_avalon_streaming_source_valid), //         .valid
+		.out_0_data     (avalon_st_adapter_002_out_0_data),                //    out_0.data
+		.out_0_valid    (avalon_st_adapter_002_out_0_valid),               //         .valid
+		.out_0_ready    (avalon_st_adapter_002_out_0_ready)                //         .ready
+	);
+
+	lms_dsp_avalon_st_adapter_003 #(
+		.inBitsPerSymbol (12),
+		.inUsePackets    (0),
+		.inDataWidth     (48),
+		.inChannelWidth  (1),
+		.inErrorWidth    (0),
+		.inUseEmptyPort  (0),
+		.inUseValid      (1),
+		.inUseReady      (1),
+		.inReadyLatency  (0),
+		.outDataWidth    (48),
+		.outChannelWidth (0),
+		.outErrorWidth   (0),
+		.outUseEmptyPort (0),
+		.outUseValid     (1),
+		.outUseReady     (0),
+		.outReadyLatency (0)
+	) avalon_st_adapter_003 (
+		.in_clk_0_clk   (clk_clk),                           // in_clk_0.clk
+		.in_rst_0_reset (rst_controller_reset_out_reset),    // in_rst_0.reset
+		.in_0_data      (multiplexer_0_out_data),            //     in_0.data
+		.in_0_valid     (multiplexer_0_out_valid),           //         .valid
+		.in_0_ready     (multiplexer_0_out_ready),           //         .ready
+		.in_0_channel   (multiplexer_0_out_channel),         //         .channel
+		.out_0_data     (avalon_st_adapter_003_out_0_data),  //    out_0.data
+		.out_0_valid    (avalon_st_adapter_003_out_0_valid)  //         .valid
+	);
+
+	lms_dsp_avalon_st_adapter_004 #(
+		.inBitsPerSymbol (12),
+		.inUsePackets    (0),
+		.inDataWidth     (48),
+		.inChannelWidth  (0),
+		.inErrorWidth    (0),
+		.inUseEmptyPort  (0),
+		.inUseValid      (1),
+		.inUseReady      (1),
+		.inReadyLatency  (0),
+		.outDataWidth    (24),
+		.outChannelWidth (0),
+		.outErrorWidth   (2),
+		.outUseEmptyPort (0),
+		.outUseValid     (1),
+		.outUseReady     (0),
+		.outReadyLatency (0)
+	) avalon_st_adapter_004 (
+		.in_clk_0_clk   (clk_clk),                           // in_clk_0.clk
+		.in_rst_0_reset (rst_controller_reset_out_reset),    // in_rst_0.reset
+		.in_0_data      (demultiplexer_0_out1_data),         //     in_0.data
+		.in_0_valid     (demultiplexer_0_out1_valid),        //         .valid
+		.in_0_ready     (demultiplexer_0_out1_ready),        //         .ready
+		.out_0_data     (avalon_st_adapter_004_out_0_data),  //    out_0.data
+		.out_0_valid    (avalon_st_adapter_004_out_0_valid), //         .valid
+		.out_0_error    (avalon_st_adapter_004_out_0_error)  //         .error
 	);
 
 	altera_reset_controller #(

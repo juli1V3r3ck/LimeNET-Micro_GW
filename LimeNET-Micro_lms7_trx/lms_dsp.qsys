@@ -9,6 +9,22 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element AVS2FIFO_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element FIFO2AVS_0
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
    element Preamble_detect_0
    {
       datum _sortIndex
@@ -25,11 +41,99 @@
          type = "int";
       }
    }
+   element demultiplexer_0
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
    element fir_compiler_ii_0
    {
       datum _sortIndex
       {
          value = "1";
+         type = "int";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element lms_dsp
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element multiplexer_0
+   {
+      datum _sortIndex
+      {
+         value = "4";
          type = "int";
       }
    }
@@ -56,16 +160,27 @@
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
  <interface
-   name="fir_avs_sink"
-   internal="fir_compiler_ii_0.avalon_streaming_sink"
-   type="avalon_streaming"
+   name="dsp_en"
+   internal="FIFO2AVS_0.datapath_ctrl"
+   type="conduit"
    dir="end" />
  <interface
-   name="preamble_detect_avs_source"
-   internal="Preamble_detect_0.avalon_streaming_source"
-   type="avalon_streaming"
-   dir="start" />
+   name="fifo_in"
+   internal="FIFO2AVS_0.conduit_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="fifo_out"
+   internal="AVS2FIFO_0.conduit_end"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <module name="AVS2FIFO_0" kind="AVS2FIFO" version="1.0" enabled="1">
+  <parameter name="datawidth" value="48" />
+ </module>
+ <module name="FIFO2AVS_0" kind="FIFO2AVS" version="1.0" enabled="1">
+  <parameter name="datawidth" value="48" />
+ </module>
  <module
    name="Preamble_detect_0"
    kind="Preamble_detect"
@@ -76,6 +191,19 @@
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module
+   name="demultiplexer_0"
+   kind="demultiplexer"
+   version="18.1"
+   enabled="1">
+  <parameter name="bitsPerSymbol" value="12" />
+  <parameter name="errorWidth" value="0" />
+  <parameter name="inChannelWidth" value="1" />
+  <parameter name="numOutputInterfaces" value="2" />
+  <parameter name="symbolsPerBeat" value="4" />
+  <parameter name="useHighBitsOfChannel" value="true" />
+  <parameter name="usePackets" value="false" />
  </module>
  <module
    name="fir_compiler_ii_0"
@@ -125,11 +253,47 @@
   <parameter name="speedGrade" value="medium" />
   <parameter name="symmetryMode" value="nsym" />
  </module>
+ <module name="multiplexer_0" kind="multiplexer" version="18.1" enabled="1">
+  <parameter name="bitsPerSymbol" value="12" />
+  <parameter name="errorWidth" value="0" />
+  <parameter name="numInputInterfaces" value="2" />
+  <parameter name="outChannelWidth" value="1" />
+  <parameter name="packetScheduling" value="false" />
+  <parameter name="schedulingSize" value="1" />
+  <parameter name="symbolsPerBeat" value="4" />
+  <parameter name="useHighBitsOfChannel" value="true" />
+  <parameter name="usePackets" value="false" />
+ </module>
  <connection
    kind="avalon_streaming"
    version="18.1"
    start="fir_compiler_ii_0.avalon_streaming_source"
    end="Preamble_detect_0.avalon_streaming_sink" />
+ <connection
+   kind="avalon_streaming"
+   version="18.1"
+   start="FIFO2AVS_0.avalon_streaming_source"
+   end="demultiplexer_0.in" />
+ <connection
+   kind="avalon_streaming"
+   version="18.1"
+   start="Preamble_detect_0.avalon_streaming_source"
+   end="multiplexer_0.in1" />
+ <connection
+   kind="avalon_streaming"
+   version="18.1"
+   start="multiplexer_0.out"
+   end="AVS2FIFO_0.avalon_streaming_sink" />
+ <connection
+   kind="avalon_streaming"
+   version="18.1"
+   start="demultiplexer_0.out0"
+   end="multiplexer_0.in0" />
+ <connection
+   kind="avalon_streaming"
+   version="18.1"
+   start="demultiplexer_0.out1"
+   end="fir_compiler_ii_0.avalon_streaming_sink" />
  <connection
    kind="clock"
    version="18.1"
@@ -139,12 +303,48 @@
    kind="clock"
    version="18.1"
    start="clk_0.clk"
+   end="demultiplexer_0.clk" />
+ <connection kind="clock" version="18.1" start="clk_0.clk" end="multiplexer_0.clk" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="clk_0.clk"
    end="Preamble_detect_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="clk_0.clk"
+   end="FIFO2AVS_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="clk_0.clk"
+   end="AVS2FIFO_0.clock_sink" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk_0.clk_reset"
+   end="demultiplexer_0.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk_0.clk_reset"
+   end="multiplexer_0.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="clk_0.clk_reset"
    end="Preamble_detect_0.reset_sink" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk_0.clk_reset"
+   end="FIFO2AVS_0.reset_sink" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk_0.clk_reset"
+   end="AVS2FIFO_0.reset_sink" />
  <connection
    kind="reset"
    version="18.1"
