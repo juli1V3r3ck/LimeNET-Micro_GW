@@ -331,20 +331,7 @@ begin
       cfg_top_MOSI               => RAPI_SPI1_MOSI,
       cfg_top_SCLK               => RAPI_SPI1_SCLK,
       cfg_top_CS                 => RAPI_SPI1_CE0,--RAPI_SPI1_CE2,
-      cfg_top_or_lms_ctrl_MISO   => inst0_cfg_top_or_lms_ctrl_MISO,
-      vctcxo_tune_en             => '0',
-      vctcxo_irq                 => '0',
-      avm_m0_address             => open,
-      avm_m0_read                => open,
-      avm_m0_waitrequest         => '0',
-      avm_m0_readdata            => "00000000",
-      avm_m0_readdatavalid       => '0',
-      avm_m0_write               => open,
-      avm_m0_writedata           => open,
-      avm_m0_clk_clk             => open,
-      avm_m0_reset_reset         => open
-      
-      
+      cfg_top_or_lms_ctrl_MISO   => inst0_cfg_top_or_lms_ctrl_MISO
    );
    
    --rpi_S1CE2 <= '0' when RAPI_SPI1_CE0 = '1' and RAPI_SPI1_CE1 = '1' else '1'; --workaround for insufficient amount of LimeSDR-mini fpga gpio pins

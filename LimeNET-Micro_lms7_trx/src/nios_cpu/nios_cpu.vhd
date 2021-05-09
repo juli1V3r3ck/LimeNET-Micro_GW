@@ -68,21 +68,7 @@ entity nios_cpu is
       cfg_top_MOSI         : in std_logic;
       cfg_top_SCLK         : in std_logic;
       cfg_top_CS           : in std_logic;
-      cfg_top_or_lms_ctrl_MISO	: out std_logic;
-      
-      vctcxo_tune_en       : in    std_logic;
-      vctcxo_irq           : in    std_logic;
-      avm_m0_address       : out   std_logic_vector(7 downto 0);                     --                           avm_m0.address
-      avm_m0_read          : out   std_logic;                                        --                                 .read
-      avm_m0_waitrequest   : in    std_logic                     := '0';             --                                 .waitrequest
-      avm_m0_readdata      : in    std_logic_vector(7 downto 0)  := (others => '0'); --                                 .readdata
-      avm_m0_readdatavalid : in    std_logic                     := '0';             --                                 .readdatavalid
-      avm_m0_write         : out   std_logic;                                        --                                 .write
-      avm_m0_writedata     : out   std_logic_vector(7 downto 0);                     --                                 .writedata
-      avm_m0_clk_clk       : out   std_logic;                                        --                       avm_m0_clk.clk
-      avm_m0_reset_reset   : out   std_logic       
-
-
+      cfg_top_or_lms_ctrl_MISO	: out std_logic
    );
 end nios_cpu;
 
@@ -91,14 +77,8 @@ end nios_cpu;
 -- ----------------------------------------------------------------------------
 architecture arch of nios_cpu is
 --declare signals,  components here
-
-   signal vctcxo_tune_en_sync       : std_logic;
-   signal vctcxo_irq_sync           : std_logic;
    
 --inst0
-   signal inst0_dac_spi_ext_MOSI    : std_logic;
-   signal inst0_dac_spi_ext_SCLK    : std_logic;
-   signal inst0_dac_spi_ext_SS_n    : std_logic;
    signal inst0_fpga_spi_ext_MISO   : std_logic;   
    signal inst0_fpga_spi_ext_MOSI   : std_logic;
    signal inst0_fpga_spi_ext_SCLK   : std_logic;
@@ -108,28 +88,21 @@ architecture arch of nios_cpu is
    
 -- inst1
    signal inst1_sdout               : std_logic;
-   
-   signal vctcxo_tamer_0_irq_out_irq   : std_logic;
-   signal vctcxo_tamer_0_ctrl_export   : std_logic_vector(3 downto 0);
 
    
    component lms_ctr is
    port (
       clk_clk                                 : in    std_logic                    := 'X';             -- clk
       reset_reset_n                           : in    std_logic                     := '0';            --                            reset.reset_n
-      exfifo_if_d_export                      : in    std_logic_vector(31 downto 0) := (others => 'X'); -- export
+      exfifo_if_d_export                      : in    std_logic_vector(31 downto 0) := (others => 'X');-- export
       exfifo_if_rd_export                     : out   std_logic;                                       -- export
       exfifo_if_rdempty_export                : in    std_logic                    := 'X';             -- export
-      exfifo_of_d_export                      : out   std_logic_vector(31 downto 0);                    -- export
+      exfifo_of_d_export                      : out   std_logic_vector(31 downto 0);                   -- export
       exfifo_of_wr_export                     : out   std_logic;                                       -- export
       exfifo_of_wrfull_export                 : in    std_logic                    := 'X';             -- export
       exfifo_rst_export                       : out   std_logic;                                       -- export
       leds_external_connection_export         : out   std_logic_vector(7 downto 0);                    -- export
       lms_ctr_gpio_external_connection_export : out   std_logic_vector(3 downto 0);                    -- export
-      dac_spi_ext_MISO                        : in    std_logic                    := 'X';             -- MISO
-      dac_spi_ext_MOSI                        : out   std_logic;                                       -- MOSI
-      dac_spi_ext_SCLK                        : out   std_logic;                                       -- SCLK
-      dac_spi_ext_SS_n                        : out   std_logic;                                       -- SS_n
       fpga_spi_ext_MISO                       : in    std_logic                    := 'X';             -- MISO
       fpga_spi_ext_MOSI                       : out   std_logic;                                       -- MOSI
       fpga_spi_ext_SCLK                       : out   std_logic;                                       -- SCLK
@@ -137,30 +110,14 @@ architecture arch of nios_cpu is
       switch_external_connection_export       : in    std_logic_vector(7 downto 0) := (others => 'X'); -- export
       i2c_scl_export                          : inout std_logic                    := 'X';             -- export
       i2c_sda_export                          : inout std_logic                    := 'X';             -- export
-      flash_spi_MISO                          : in    std_logic                     := 'X';             -- MISO
-      flash_spi_MOSI                          : out   std_logic;                                        -- MOSI
-      flash_spi_SCLK                          : out   std_logic;                                        -- SCLK
-      flash_spi_SS_n                          : out   std_logic;                                        -- SS_n
-      vctcxo_tamer_0_ctrl_export              : in    std_logic_vector(3 downto 0)  := (others=>'0');             --            vctcxo_tamer_0_irq_in.export
-      avm_m0_address                          : out   std_logic_vector(7 downto 0);                     --                           avm_m0.address
-      avm_m0_read                             : out   std_logic;                                        --                                 .read
-      avm_m0_waitrequest                      : in    std_logic                     := '0';             --                                 .waitrequest
-      avm_m0_readdata                         : in    std_logic_vector(7 downto 0)  := (others => '0'); --                                 .readdata
-      avm_m0_write                            : out   std_logic;                                        --                                 .write
-      avm_m0_writedata                        : out   std_logic_vector(7 downto 0);                     --                                 .writedata
-      avm_m0_readdatavalid                    : in    std_logic                     := '0';             --                                 .readdatavalid
-      avm_m0_clk_clk                          : out   std_logic;                                        --                       avm_m0_clk.clk
-      avm_m0_reset_reset                      : out   std_logic                                          --                     avm_m0_reset.reset       
+      flash_spi_MISO                          : in    std_logic                     := 'X';            -- MISO
+      flash_spi_MOSI                          : out   std_logic;                                       -- MOSI
+      flash_spi_SCLK                          : out   std_logic;                                       -- SCLK
+      flash_spi_SS_n                          : out   std_logic                                        -- SS_n
    );
    end component lms_ctr;
   
 begin
-
-   sync_reg0 : entity work.sync_reg 
-   port map(clk, '1', vctcxo_tune_en, vctcxo_tune_en_sync);
-
-   sync_reg1 : entity work.sync_reg 
-   port map(clk, '1', vctcxo_irq, vctcxo_irq_sync);
 
 -- ----------------------------------------------------------------------------
 -- NIOS instance
@@ -178,10 +135,6 @@ begin
       exfifo_rst_export                         => exfifo_of_rst,
       leds_external_connection_export           => gpo,
       lms_ctr_gpio_external_connection_export   => lms_ctr_gpio,
-      dac_spi_ext_MISO                          => '0',
-      dac_spi_ext_MOSI                          => inst0_dac_spi_ext_MOSI,
-      dac_spi_ext_SCLK                          => inst0_dac_spi_ext_SCLK,
-      dac_spi_ext_SS_n                          => inst0_dac_spi_ext_SS_n,
       fpga_spi_ext_MISO                         => inst0_fpga_spi_ext_MISO,
       fpga_spi_ext_MOSI                         => inst0_fpga_spi_ext_MOSI,
       fpga_spi_ext_SCLK                         => inst0_fpga_spi_ext_SCLK,
@@ -192,17 +145,7 @@ begin
       flash_spi_MISO                            => spi_1_MISO,
       flash_spi_MOSI                            => spi_1_MOSI,
       flash_spi_SCLK                            => spi_1_SCLK,
-      flash_spi_SS_n                            => inst0_flash_spi_SS_n,
-      vctcxo_tamer_0_ctrl_export                => vctcxo_tamer_0_ctrl_export,
-      avm_m0_address                            => avm_m0_address,
-      avm_m0_read                               => avm_m0_read,
-      avm_m0_waitrequest                        => avm_m0_waitrequest,
-      avm_m0_readdatavalid                      => avm_m0_readdatavalid,
-      avm_m0_readdata                           => avm_m0_readdata,
-      avm_m0_write                              => avm_m0_write,
-      avm_m0_writedata                          => avm_m0_writedata,
-      avm_m0_clk_clk                            => avm_m0_clk_clk,
-      avm_m0_reset_reset                        => avm_m0_reset_reset
+      flash_spi_SS_n                            => inst0_flash_spi_SS_n
    );
 -- ----------------------------------------------------------------------------
 -- fpgacfg instance
@@ -233,19 +176,14 @@ begin
    
    inst0_fpga_spi_ext_MISO <= inst1_sdout OR spi_0_MISO;
    
-   vctcxo_tamer_0_ctrl_export(0) <= vctcxo_tune_en_sync;
-   vctcxo_tamer_0_ctrl_export(1) <= vctcxo_irq_sync;
-   vctcxo_tamer_0_ctrl_export(2) <= '0';
-   vctcxo_tamer_0_ctrl_export(3) <= '0';
-   
 -- ----------------------------------------------------------------------------
 -- Output ports
 -- ----------------------------------------------------------------------------   
-   spi_0_SS_n  <= '1' & inst0_fpga_spi_ext_SS_n(2) & inst0_dac_spi_ext_SS_n & inst0_fpga_spi_ext_SS_n(1 downto 0);
+   spi_0_SS_n  <= '1' & inst0_fpga_spi_ext_SS_n(2) & '1' & inst0_fpga_spi_ext_SS_n(1 downto 0);
    -- SPI switch to select between AD5601 and the rest of slaves.
    -- This is neccessary, while ADF4002 CLOCK_PHASE = 0, while AD5601 CLOCK_PHASE = 1
-   spi_0_MOSI <= inst0_fpga_spi_ext_MOSI when inst0_dac_spi_ext_SS_n = '1' else inst0_dac_spi_ext_MOSI;
-   spi_0_SCLK <= inst0_fpga_spi_ext_SCLK when inst0_dac_spi_ext_SS_n = '1' else inst0_dac_spi_ext_SCLK;
+   spi_0_MOSI <= inst0_fpga_spi_ext_MOSI;
+   spi_0_SCLK <= inst0_fpga_spi_ext_SCLK;
    
    spi_1_SS_n  <= '1' & inst0_flash_spi_SS_n;
    

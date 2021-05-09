@@ -145,7 +145,6 @@ ELF := lms_ctr_app.elf
 C_SRCS += main.c
 C_SRCS += spi_flash_lib.c
 C_SRCS += i2c_opencores.c
-C_SRCS += vctcxo_tamer.c
 CXX_SRCS :=
 ASM_SRCS :=
 
