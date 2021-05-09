@@ -185,12 +185,6 @@ signal inst0_to_pllcfg           : t_TO_PLLCFG;
 signal inst0_from_periphcfg      : t_FROM_PERIPHCFG;
 signal inst0_to_periphcfg        : t_TO_PERIPHCFG;
 signal inst0_cfg_top_CS          : std_logic;
-signal inst0_avm_m0_address      : std_logic_vector(7 downto 0);
-signal inst0_avm_m0_read         : std_logic;
-signal inst0_avm_m0_write        : std_logic;
-signal inst0_avm_m0_writedata    : std_logic_vector(7 downto 0);
-signal inst0_avm_m0_clk_clk      : std_logic;
-signal inst0_avm_m0_reset_reset  : std_logic;
 signal inst0_uart_txd            : std_logic;
 signal inst0_cfg_top_or_lms_ctrl_MISO  : std_logic;
 
@@ -253,17 +247,6 @@ signal RAPI_SPI1_CE3_int            : std_logic;
 
 signal beat : std_logic;
 
---inst7
-signal inst7_sdout                  : std_logic;
-signal inst7_en                     : std_logic;
-signal inst7_mm_rd_data             : std_logic_vector(7 downto 0);
-signal inst7_mm_rd_datav            : std_logic;
-signal inst7_mm_wait_req            : std_logic;
-signal inst7_mm_irq                 : std_logic;
-signal inst7_uart_tx                : std_logic;
-signal inst7_fpga_led_g             : std_logic;
-signal inst7_fpga_led_r             : std_logic;
-
 --inst9
 signal inst9_data                   : std_logic_vector(31 downto 0);
 
@@ -273,30 +256,6 @@ signal eth_led2                     : std_logic;
 
 begin
 
--- ----------------------------------------------------------------------------
---SPI MODULE FOR GSMBOARD
--- ----------------------------------------------------------------------------
---   ints0_spimodule : entity work.spi_module 
---   port map(
---      MISO                    => RAPI_SPI0_MISO,
---      MOSI                    => RAPI_SPI0_MOSI,
---      MCLK                    => RAPI_SPI0_SCLK,
---      CS                      => RAPI_SPI0_CE0,
---      reset_n                 => reset_n,
---      clk30_72mhz             => LMK_CLK,
---      tx_fifo_rdclk           => inst1_pll_c1,
---      tx_fifo_reset_n         => inst6_tx_in_pct_reset_n_req,
---      tx_fifo_q               => inst2_EP03_rdata,
---      tx_fifo_rdempty         => inst2_EP03_rempty,
---      tx_fifo_rdusedw         => inst2_EP03_rdusedw,
---      tx_fifo_rdreq           => inst6_tx_in_pct_rdreq,
---      rx_fifo_reset_n         => inst6_rx_pct_fifo_aclrn_req,
---      rx_fifo_wrclk           => inst1_pll_c3,
---      rx_fifo_data            => inst6_rx_pct_fifo_wdata,
---      rx_fifo_wrreq           => inst6_rx_pct_fifo_wrreq,
---      rx_fifo_wrusedw         => inst2_EP83_wrusedw,
---      data_request_interrupt  => RAPI_GPIO12 -- Connect rapi interrupt pin
---   );
 -- ----------------------------------------------------------------------------
 -- Reset logic
 -- ----------------------------------------------------------------------------
@@ -373,17 +332,17 @@ begin
       cfg_top_SCLK               => RAPI_SPI1_SCLK,
       cfg_top_CS                 => RAPI_SPI1_CE0,--RAPI_SPI1_CE2,
       cfg_top_or_lms_ctrl_MISO   => inst0_cfg_top_or_lms_ctrl_MISO,
-      vctcxo_tune_en             => inst7_en,
-      vctcxo_irq                 => inst7_mm_irq,
-      avm_m0_address             => inst0_avm_m0_address,
-      avm_m0_read                => inst0_avm_m0_read,
-      avm_m0_waitrequest         => inst7_mm_wait_req,
-      avm_m0_readdata            => inst7_mm_rd_data,
-      avm_m0_readdatavalid       => inst7_mm_rd_datav,
-      avm_m0_write               => inst0_avm_m0_write,
-      avm_m0_writedata           => inst0_avm_m0_writedata,
-      avm_m0_clk_clk             => inst0_avm_m0_clk_clk,
-      avm_m0_reset_reset         => inst0_avm_m0_reset_reset
+      vctcxo_tune_en             => '0',
+      vctcxo_irq                 => '0',
+      avm_m0_address             => open,
+      avm_m0_read                => open,
+      avm_m0_waitrequest         => '0',
+      avm_m0_readdata            => "00000000",
+      avm_m0_readdatavalid       => '0',
+      avm_m0_write               => open,
+      avm_m0_writedata           => open,
+      avm_m0_clk_clk             => open,
+      avm_m0_reset_reset         => open
       
       
    );
@@ -400,7 +359,7 @@ begin
    inst0_to_fpgacfg.BOM_VER   <= BOM_VER; 
    inst0_to_fpgacfg.PWR_SRC   <= '0';
    
-   RAPI_SPI1_MISO             <= inst0_cfg_top_or_lms_ctrl_MISO OR inst7_sdout OR FPGA_SPI_MISO;
+   RAPI_SPI1_MISO             <= inst0_cfg_top_or_lms_ctrl_MISO OR FPGA_SPI_MISO;
    
 -- ----------------------------------------------------------------------------
 -- pll_top instance.
@@ -567,18 +526,18 @@ begin
       led4_adf_muxout      => ADF_MUXOUT,
       led4_dac_ss          => inst0_spi_0_SS_n(2),
       led4_adf_ss          => inst0_spi_0_SS_n(3),
-      led4_gnss_en         => inst7_en,
+      led4_gnss_en         => '0',
       
       
       -- LED5 ( GNSS status )
-      led5_in_g            => inst7_fpga_led_g,
-      led5_in_r            => inst7_fpga_led_r,
+      led5_in_g            => '0',
+      led5_in_r            => '1',
       led5_ctrl            => inst0_from_fpgacfg.FPGA_LED5_CTRL,
       led5_out_g           => FPGA_LED5_G,
       led5_out_r           => FPGA_LED5_R,
       --GPIO
       gpio_dir             => (others=>'1'),
-      gpio_out_val         => "000000" & inst7_uart_tx & inst1_pll_locked,
+      gpio_out_val         => "0000000" & inst1_pll_locked,
       gpio_rd_val          => open,
       gpio                 => FPGA_GPIO,      
       --Fan control
@@ -641,59 +600,6 @@ begin
       rx_smpl_cmp_err         => inst6_rx_smpl_cmp_err     
    );
  
- 
-   -- TODO: connect spi line sen
-   inst7_limegnss_gpio_top : entity work.limegnss_gpio_top
-   generic map( 
-      UART_BAUD_RATE          => 9600,
-      VCTCXO_CLOCK_FREQUENCY  => 30720000,
-      MM_CLOCK_FREQUENCY      => 30720000
-   )
-   port map(
-      areset_n          => reset_n,
-      -- SPI interface
-      -- Address and location of SPI memory module
-      -- Will be hard wired at the top level
-      tamercfg_maddress => "0000000111",
-      gnsscfg_maddress  => "0000001000",
-      -- Serial port IOs
-      sdin              => inst0_spi_0_MOSI,    -- Data in
-      sclk              => inst0_spi_0_SCLK,    -- Data clock
-      sen               => inst0_spi_0_SS_n(1), -- Enable signal (active low)
-      sdout             => inst7_sdout,            -- Data out 
-      -- Signals coming from the pins or top level serial interface
-      lreset            => reset_n,    -- Logic reset signal, resets logic cells only  (use only one reset)
-      mreset            => reset_n,    -- Memory reset signal, resets configuration memory only (use only one reset)
-      vctcxo_clk        => LMK_CLK,    -- Clock from VCTCXO       
-      --LimeGNSS-GPIO pins
-      gnss_tx           => open,   
-      gnss_rx           => GNSS_UART_TX,  
-      gnss_tpulse       => GNSS_TPULSE,   
-      gnss_fix          => '0',           
-      fpga_led_g        => inst7_fpga_led_g,
-      fpga_led_r        => inst7_fpga_led_r, 
-      -- NIOS PIO
-      en                => inst7_en,     
-      -- NIOs  Avalon-MM Interface (External master)
-      mm_clock          => inst0_avm_m0_clk_clk,
-      mm_reset          => inst0_avm_m0_reset_reset,
-      mm_rd_req         => inst0_avm_m0_read,
-      mm_wr_req         => inst0_avm_m0_write,
-      mm_addr           => inst0_avm_m0_address,
-      mm_wr_data        => inst0_avm_m0_writedata,
-      mm_rd_data        => inst7_mm_rd_data,
-      mm_rd_datav       => inst7_mm_rd_datav,
-      mm_wait_req       => inst7_mm_wait_req,
-      -- Avalon Interrupts
-      mm_irq            => inst7_mm_irq,
-      
-      -- Testing (UART logger)
-      fan_ctrl_in       => '0',
-      uart_tx           => inst7_uart_tx
-      
-   ); 
-   
-   
    eth_led1 <= ETH_GPIO2 when inst0_from_periphcfg.PERIPH_OUTPUT_OVRD_0(2) = '0' else inst0_from_periphcfg.PERIPH_OUTPUT_VAL_0(2);
    eth_led2 <= ETH_GPIO1 when inst0_from_periphcfg.PERIPH_OUTPUT_OVRD_0(3) = '0' else inst0_from_periphcfg.PERIPH_OUTPUT_VAL_0(3);
    
