@@ -55,11 +55,6 @@ end rxtx_top;
 -- Architecture
 -- ----------------------------------------------------------------------------
 architecture arch of rxtx_top is
---declare signals,  components here
-
---inst5
-signal inst5_smpl_nr_cnt         : std_logic_vector(63 downto 0);
-signal inst5_pct_hdr_cap         : std_logic;
 
 begin
    -- Reset signal for inst0 with synchronous removal to rx_clk clock domain, 
@@ -99,12 +94,12 @@ begin
       pct_fifo_wusedw      => rx_pct_fifo_wusedw,
       pct_fifo_wrreq       => rx_pct_fifo_wrreq,
       pct_fifo_wdata       => rx_pct_fifo_wdata,
-      pct_hdr_cap          => inst5_pct_hdr_cap,
+      pct_hdr_cap          => open,
       --sample nr
       clr_smpl_nr          => from_fpgacfg.smpl_nr_clr,
       ld_smpl_nr           => '0',
       smpl_nr_in           => (others=>'0'),
-      smpl_nr_cnt          => inst5_smpl_nr_cnt,
+      smpl_nr_cnt          => open,
       --flag control
       tx_pct_loss          => '0',
       tx_pct_loss_clr      => from_fpgacfg.txpct_loss_clr,

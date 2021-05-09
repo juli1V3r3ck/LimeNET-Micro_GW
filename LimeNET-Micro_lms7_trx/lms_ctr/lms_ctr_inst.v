@@ -1,18 +1,5 @@
 	lms_ctr u0 (
-		.avm_m0_address                          (<connected-to-avm_m0_address>),                          //                           avm_m0.address
-		.avm_m0_read                             (<connected-to-avm_m0_read>),                             //                                 .read
-		.avm_m0_waitrequest                      (<connected-to-avm_m0_waitrequest>),                      //                                 .waitrequest
-		.avm_m0_readdata                         (<connected-to-avm_m0_readdata>),                         //                                 .readdata
-		.avm_m0_write                            (<connected-to-avm_m0_write>),                            //                                 .write
-		.avm_m0_writedata                        (<connected-to-avm_m0_writedata>),                        //                                 .writedata
-		.avm_m0_readdatavalid                    (<connected-to-avm_m0_readdatavalid>),                    //                                 .readdatavalid
-		.avm_m0_clk_clk                          (<connected-to-avm_m0_clk_clk>),                          //                       avm_m0_clk.clk
-		.avm_m0_reset_reset                      (<connected-to-avm_m0_reset_reset>),                      //                     avm_m0_reset.reset
 		.clk_clk                                 (<connected-to-clk_clk>),                                 //                              clk.clk
-		.dac_spi_ext_MISO                        (<connected-to-dac_spi_ext_MISO>),                        //                      dac_spi_ext.MISO
-		.dac_spi_ext_MOSI                        (<connected-to-dac_spi_ext_MOSI>),                        //                                 .MOSI
-		.dac_spi_ext_SCLK                        (<connected-to-dac_spi_ext_SCLK>),                        //                                 .SCLK
-		.dac_spi_ext_SS_n                        (<connected-to-dac_spi_ext_SS_n>),                        //                                 .SS_n
 		.exfifo_if_d_export                      (<connected-to-exfifo_if_d_export>),                      //                      exfifo_if_d.export
 		.exfifo_if_rd_export                     (<connected-to-exfifo_if_rd_export>),                     //                     exfifo_if_rd.export
 		.exfifo_if_rdempty_export                (<connected-to-exfifo_if_rdempty_export>),                //                exfifo_if_rdempty.export
@@ -33,7 +20,6 @@
 		.leds_external_connection_export         (<connected-to-leds_external_connection_export>),         //         leds_external_connection.export
 		.lms_ctr_gpio_external_connection_export (<connected-to-lms_ctr_gpio_external_connection_export>), // lms_ctr_gpio_external_connection.export
 		.reset_reset_n                           (<connected-to-reset_reset_n>),                           //                            reset.reset_n
-		.switch_external_connection_export       (<connected-to-switch_external_connection_export>),       //       switch_external_connection.export
-		.vctcxo_tamer_0_ctrl_export              (<connected-to-vctcxo_tamer_0_ctrl_export>)               //              vctcxo_tamer_0_ctrl.export
+		.switch_external_connection_export       (<connected-to-switch_external_connection_export>)        //       switch_external_connection.export
 	);
 

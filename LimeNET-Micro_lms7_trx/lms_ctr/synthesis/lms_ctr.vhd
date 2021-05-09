@@ -8,20 +8,7 @@ use IEEE.numeric_std.all;
 
 entity lms_ctr is
 	port (
-		avm_m0_address                          : out   std_logic_vector(7 downto 0);                     --                           avm_m0.address
-		avm_m0_read                             : out   std_logic;                                        --                                 .read
-		avm_m0_waitrequest                      : in    std_logic                     := '0';             --                                 .waitrequest
-		avm_m0_readdata                         : in    std_logic_vector(7 downto 0)  := (others => '0'); --                                 .readdata
-		avm_m0_write                            : out   std_logic;                                        --                                 .write
-		avm_m0_writedata                        : out   std_logic_vector(7 downto 0);                     --                                 .writedata
-		avm_m0_readdatavalid                    : in    std_logic                     := '0';             --                                 .readdatavalid
-		avm_m0_clk_clk                          : out   std_logic;                                        --                       avm_m0_clk.clk
-		avm_m0_reset_reset                      : out   std_logic;                                        --                     avm_m0_reset.reset
 		clk_clk                                 : in    std_logic                     := '0';             --                              clk.clk
-		dac_spi_ext_MISO                        : in    std_logic                     := '0';             --                      dac_spi_ext.MISO
-		dac_spi_ext_MOSI                        : out   std_logic;                                        --                                 .MOSI
-		dac_spi_ext_SCLK                        : out   std_logic;                                        --                                 .SCLK
-		dac_spi_ext_SS_n                        : out   std_logic;                                        --                                 .SS_n
 		exfifo_if_d_export                      : in    std_logic_vector(31 downto 0) := (others => '0'); --                      exfifo_if_d.export
 		exfifo_if_rd_export                     : out   std_logic;                                        --                     exfifo_if_rd.export
 		exfifo_if_rdempty_export                : in    std_logic                     := '0';             --                exfifo_if_rdempty.export
@@ -42,8 +29,7 @@ entity lms_ctr is
 		leds_external_connection_export         : out   std_logic_vector(7 downto 0);                     --         leds_external_connection.export
 		lms_ctr_gpio_external_connection_export : out   std_logic_vector(3 downto 0);                     -- lms_ctr_gpio_external_connection.export
 		reset_reset_n                           : in    std_logic                     := '0';             --                            reset.reset_n
-		switch_external_connection_export       : in    std_logic_vector(7 downto 0)  := (others => '0'); --       switch_external_connection.export
-		vctcxo_tamer_0_ctrl_export              : in    std_logic_vector(3 downto 0)  := (others => '0')  --              vctcxo_tamer_0_ctrl.export
+		switch_external_connection_export       : in    std_logic_vector(7 downto 0)  := (others => '0')  --       switch_external_connection.export
 	);
 end entity lms_ctr;
 
@@ -70,47 +56,6 @@ architecture rtl of lms_ctr is
 			coe_fifo_rst   : out std_logic                                         -- export
 		);
 	end component avfifo;
-
-	component Avalon_MM_external is
-		port (
-			avs_s0_address       : in  std_logic_vector(7 downto 0) := (others => 'X'); -- address
-			avs_s0_read          : in  std_logic                    := 'X';             -- read
-			avs_s0_readdata      : out std_logic_vector(7 downto 0);                    -- readdata
-			avs_s0_write         : in  std_logic                    := 'X';             -- write
-			avs_s0_writedata     : in  std_logic_vector(7 downto 0) := (others => 'X'); -- writedata
-			avs_s0_waitrequest   : out std_logic;                                       -- waitrequest
-			avs_s0_readdatavalid : out std_logic;                                       -- readdatavalid
-			clock_clk            : in  std_logic                    := 'X';             -- clk
-			reset_reset          : in  std_logic                    := 'X';             -- reset
-			avm_m0_address       : out std_logic_vector(7 downto 0);                    -- address
-			avm_m0_read          : out std_logic;                                       -- read
-			avm_m0_waitrequest   : in  std_logic                    := 'X';             -- waitrequest
-			avm_m0_readdata      : in  std_logic_vector(7 downto 0) := (others => 'X'); -- readdata
-			avm_m0_write         : out std_logic;                                       -- write
-			avm_m0_writedata     : out std_logic_vector(7 downto 0);                    -- writedata
-			avm_m0_readdatavalid : in  std_logic                    := 'X';             -- readdatavalid
-			clock_source_clk     : out std_logic;                                       -- clk
-			reset_source_reset   : out std_logic                                        -- reset
-		);
-	end component Avalon_MM_external;
-
-	component lms_ctr_dac_spi is
-		port (
-			clk           : in  std_logic                     := 'X';             -- clk
-			reset_n       : in  std_logic                     := 'X';             -- reset_n
-			data_from_cpu : in  std_logic_vector(15 downto 0) := (others => 'X'); -- writedata
-			data_to_cpu   : out std_logic_vector(15 downto 0);                    -- readdata
-			mem_addr      : in  std_logic_vector(2 downto 0)  := (others => 'X'); -- address
-			read_n        : in  std_logic                     := 'X';             -- read_n
-			spi_select    : in  std_logic                     := 'X';             -- chipselect
-			write_n       : in  std_logic                     := 'X';             -- write_n
-			irq           : out std_logic;                                        -- irq
-			MISO          : in  std_logic                     := 'X';             -- export
-			MOSI          : out std_logic;                                        -- export
-			SCLK          : out std_logic;                                        -- export
-			SS_n          : out std_logic                                         -- export
-		);
-	end component lms_ctr_dac_spi;
 
 	component altera_dual_boot is
 		generic (
@@ -363,16 +308,6 @@ architecture rtl of lms_ctr is
 		);
 	end component lms_ctr_sysid_qsys_0;
 
-	component lms_ctr_vctcxo_tamer_0_ctrl is
-		port (
-			clk      : in  std_logic                     := 'X';             -- clk
-			reset_n  : in  std_logic                     := 'X';             -- reset_n
-			address  : in  std_logic_vector(1 downto 0)  := (others => 'X'); -- address
-			readdata : out std_logic_vector(31 downto 0);                    -- readdata
-			in_port  : in  std_logic_vector(3 downto 0)  := (others => 'X')  -- export
-		);
-	end component lms_ctr_vctcxo_tamer_0_ctrl;
-
 	component altera_customins_master_translator is
 		generic (
 			SHARED_COMB_AND_MULTI : integer := 0
@@ -535,19 +470,6 @@ architecture rtl of lms_ctr is
 			Av_FIFO_Int_0_avalon_slave_0_readdata          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
 			Av_FIFO_Int_0_avalon_slave_0_writedata         : out std_logic_vector(31 downto 0);                    -- writedata
 			Av_FIFO_Int_0_avalon_slave_0_chipselect        : out std_logic;                                        -- chipselect
-			Avalon_MM_external_0_avs_s0_address            : out std_logic_vector(7 downto 0);                     -- address
-			Avalon_MM_external_0_avs_s0_write              : out std_logic;                                        -- write
-			Avalon_MM_external_0_avs_s0_read               : out std_logic;                                        -- read
-			Avalon_MM_external_0_avs_s0_readdata           : in  std_logic_vector(7 downto 0)  := (others => 'X'); -- readdata
-			Avalon_MM_external_0_avs_s0_writedata          : out std_logic_vector(7 downto 0);                     -- writedata
-			Avalon_MM_external_0_avs_s0_readdatavalid      : in  std_logic                     := 'X';             -- readdatavalid
-			Avalon_MM_external_0_avs_s0_waitrequest        : in  std_logic                     := 'X';             -- waitrequest
-			dac_spi_spi_control_port_address               : out std_logic_vector(2 downto 0);                     -- address
-			dac_spi_spi_control_port_write                 : out std_logic;                                        -- write
-			dac_spi_spi_control_port_read                  : out std_logic;                                        -- read
-			dac_spi_spi_control_port_readdata              : in  std_logic_vector(15 downto 0) := (others => 'X'); -- readdata
-			dac_spi_spi_control_port_writedata             : out std_logic_vector(15 downto 0);                    -- writedata
-			dac_spi_spi_control_port_chipselect            : out std_logic;                                        -- chipselect
 			dual_boot_0_avalon_address                     : out std_logic_vector(2 downto 0);                     -- address
 			dual_boot_0_avalon_write                       : out std_logic;                                        -- write
 			dual_boot_0_avalon_read                        : out std_logic;                                        -- read
@@ -612,9 +534,7 @@ architecture rtl of lms_ctr is
 			switch_s1_address                              : out std_logic_vector(1 downto 0);                     -- address
 			switch_s1_readdata                             : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
 			sysid_qsys_0_control_slave_address             : out std_logic_vector(0 downto 0);                     -- address
-			sysid_qsys_0_control_slave_readdata            : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
-			vctcxo_tamer_0_ctrl_s1_address                 : out std_logic_vector(1 downto 0);                     -- address
-			vctcxo_tamer_0_ctrl_s1_readdata                : in  std_logic_vector(31 downto 0) := (others => 'X')  -- readdata
+			sysid_qsys_0_control_slave_readdata            : in  std_logic_vector(31 downto 0) := (others => 'X')  -- readdata
 		);
 	end component lms_ctr_mm_interconnect_0;
 
@@ -625,7 +545,6 @@ architecture rtl of lms_ctr is
 			receiver0_irq : in  std_logic                     := 'X'; -- irq
 			receiver1_irq : in  std_logic                     := 'X'; -- irq
 			receiver2_irq : in  std_logic                     := 'X'; -- irq
-			receiver3_irq : in  std_logic                     := 'X'; -- irq
 			sender_irq    : out std_logic_vector(31 downto 0)         -- irq
 		);
 	end component lms_ctr_irq_mapper;
@@ -830,13 +749,6 @@ architecture rtl of lms_ctr is
 	signal mm_interconnect_0_i2c_opencores_0_avalon_slave_0_address                    : std_logic_vector(2 downto 0);  -- mm_interconnect_0:i2c_opencores_0_avalon_slave_0_address -> i2c_opencores_0:wb_adr_i
 	signal mm_interconnect_0_i2c_opencores_0_avalon_slave_0_write                      : std_logic;                     -- mm_interconnect_0:i2c_opencores_0_avalon_slave_0_write -> i2c_opencores_0:wb_we_i
 	signal mm_interconnect_0_i2c_opencores_0_avalon_slave_0_writedata                  : std_logic_vector(7 downto 0);  -- mm_interconnect_0:i2c_opencores_0_avalon_slave_0_writedata -> i2c_opencores_0:wb_dat_i
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_readdata                      : std_logic_vector(7 downto 0);  -- Avalon_MM_external_0:avs_s0_readdata -> mm_interconnect_0:Avalon_MM_external_0_avs_s0_readdata
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_waitrequest                   : std_logic;                     -- Avalon_MM_external_0:avs_s0_waitrequest -> mm_interconnect_0:Avalon_MM_external_0_avs_s0_waitrequest
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_address                       : std_logic_vector(7 downto 0);  -- mm_interconnect_0:Avalon_MM_external_0_avs_s0_address -> Avalon_MM_external_0:avs_s0_address
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_read                          : std_logic;                     -- mm_interconnect_0:Avalon_MM_external_0_avs_s0_read -> Avalon_MM_external_0:avs_s0_read
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_readdatavalid                 : std_logic;                     -- Avalon_MM_external_0:avs_s0_readdatavalid -> mm_interconnect_0:Avalon_MM_external_0_avs_s0_readdatavalid
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_write                         : std_logic;                     -- mm_interconnect_0:Avalon_MM_external_0_avs_s0_write -> Avalon_MM_external_0:avs_s0_write
-	signal mm_interconnect_0_avalon_mm_external_0_avs_s0_writedata                     : std_logic_vector(7 downto 0);  -- mm_interconnect_0:Avalon_MM_external_0_avs_s0_writedata -> Avalon_MM_external_0:avs_s0_writedata
 	signal mm_interconnect_0_sysid_qsys_0_control_slave_readdata                       : std_logic_vector(31 downto 0); -- sysid_qsys_0:readdata -> mm_interconnect_0:sysid_qsys_0_control_slave_readdata
 	signal mm_interconnect_0_sysid_qsys_0_control_slave_address                        : std_logic_vector(0 downto 0);  -- mm_interconnect_0:sysid_qsys_0_control_slave_address -> sysid_qsys_0:address
 	signal mm_interconnect_0_onchip_flash_0_csr_readdata                               : std_logic_vector(31 downto 0); -- onchip_flash_0:avmm_csr_readdata -> mm_interconnect_0:onchip_flash_0_csr_readdata
@@ -879,20 +791,12 @@ architecture rtl of lms_ctr is
 	signal mm_interconnect_0_onchip_memory2_0_s1_write                                 : std_logic;                     -- mm_interconnect_0:onchip_memory2_0_s1_write -> onchip_memory2_0:write
 	signal mm_interconnect_0_onchip_memory2_0_s1_writedata                             : std_logic_vector(31 downto 0); -- mm_interconnect_0:onchip_memory2_0_s1_writedata -> onchip_memory2_0:writedata
 	signal mm_interconnect_0_onchip_memory2_0_s1_clken                                 : std_logic;                     -- mm_interconnect_0:onchip_memory2_0_s1_clken -> onchip_memory2_0:clken
-	signal mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_readdata                           : std_logic_vector(31 downto 0); -- vctcxo_tamer_0_ctrl:readdata -> mm_interconnect_0:vctcxo_tamer_0_ctrl_s1_readdata
-	signal mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_address                            : std_logic_vector(1 downto 0);  -- mm_interconnect_0:vctcxo_tamer_0_ctrl_s1_address -> vctcxo_tamer_0_ctrl:address
 	signal mm_interconnect_0_fpga_spi_spi_control_port_chipselect                      : std_logic;                     -- mm_interconnect_0:fpga_spi_spi_control_port_chipselect -> fpga_spi:spi_select
 	signal mm_interconnect_0_fpga_spi_spi_control_port_readdata                        : std_logic_vector(15 downto 0); -- fpga_spi:data_to_cpu -> mm_interconnect_0:fpga_spi_spi_control_port_readdata
 	signal mm_interconnect_0_fpga_spi_spi_control_port_address                         : std_logic_vector(2 downto 0);  -- mm_interconnect_0:fpga_spi_spi_control_port_address -> fpga_spi:mem_addr
 	signal mm_interconnect_0_fpga_spi_spi_control_port_read                            : std_logic;                     -- mm_interconnect_0:fpga_spi_spi_control_port_read -> mm_interconnect_0_fpga_spi_spi_control_port_read:in
 	signal mm_interconnect_0_fpga_spi_spi_control_port_write                           : std_logic;                     -- mm_interconnect_0:fpga_spi_spi_control_port_write -> mm_interconnect_0_fpga_spi_spi_control_port_write:in
 	signal mm_interconnect_0_fpga_spi_spi_control_port_writedata                       : std_logic_vector(15 downto 0); -- mm_interconnect_0:fpga_spi_spi_control_port_writedata -> fpga_spi:data_from_cpu
-	signal mm_interconnect_0_dac_spi_spi_control_port_chipselect                       : std_logic;                     -- mm_interconnect_0:dac_spi_spi_control_port_chipselect -> dac_spi:spi_select
-	signal mm_interconnect_0_dac_spi_spi_control_port_readdata                         : std_logic_vector(15 downto 0); -- dac_spi:data_to_cpu -> mm_interconnect_0:dac_spi_spi_control_port_readdata
-	signal mm_interconnect_0_dac_spi_spi_control_port_address                          : std_logic_vector(2 downto 0);  -- mm_interconnect_0:dac_spi_spi_control_port_address -> dac_spi:mem_addr
-	signal mm_interconnect_0_dac_spi_spi_control_port_read                             : std_logic;                     -- mm_interconnect_0:dac_spi_spi_control_port_read -> mm_interconnect_0_dac_spi_spi_control_port_read:in
-	signal mm_interconnect_0_dac_spi_spi_control_port_write                            : std_logic;                     -- mm_interconnect_0:dac_spi_spi_control_port_write -> mm_interconnect_0_dac_spi_spi_control_port_write:in
-	signal mm_interconnect_0_dac_spi_spi_control_port_writedata                        : std_logic_vector(15 downto 0); -- mm_interconnect_0:dac_spi_spi_control_port_writedata -> dac_spi:data_from_cpu
 	signal mm_interconnect_0_flash_spi_spi_control_port_chipselect                     : std_logic;                     -- mm_interconnect_0:flash_spi_spi_control_port_chipselect -> flash_spi:spi_select
 	signal mm_interconnect_0_flash_spi_spi_control_port_readdata                       : std_logic_vector(15 downto 0); -- flash_spi:data_to_cpu -> mm_interconnect_0:flash_spi_spi_control_port_readdata
 	signal mm_interconnect_0_flash_spi_spi_control_port_address                        : std_logic_vector(2 downto 0);  -- mm_interconnect_0:flash_spi_spi_control_port_address -> flash_spi:mem_addr
@@ -901,10 +805,9 @@ architecture rtl of lms_ctr is
 	signal mm_interconnect_0_flash_spi_spi_control_port_writedata                      : std_logic_vector(15 downto 0); -- mm_interconnect_0:flash_spi_spi_control_port_writedata -> flash_spi:data_from_cpu
 	signal irq_mapper_receiver0_irq                                                    : std_logic;                     -- i2c_opencores_0:wb_inta_o -> irq_mapper:receiver0_irq
 	signal irq_mapper_receiver1_irq                                                    : std_logic;                     -- fpga_spi:irq -> irq_mapper:receiver1_irq
-	signal irq_mapper_receiver2_irq                                                    : std_logic;                     -- dac_spi:irq -> irq_mapper:receiver2_irq
-	signal irq_mapper_receiver3_irq                                                    : std_logic;                     -- flash_spi:irq -> irq_mapper:receiver3_irq
+	signal irq_mapper_receiver2_irq                                                    : std_logic;                     -- flash_spi:irq -> irq_mapper:receiver2_irq
 	signal nios2_cpu_irq_irq                                                           : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> nios2_cpu:irq
-	signal rst_controller_reset_out_reset                                              : std_logic;                     -- rst_controller:reset_out -> [Avalon_MM_external_0:reset_reset, i2c_opencores_0:wb_rst_i, irq_mapper:reset, mm_interconnect_0:nios2_cpu_reset_reset_bridge_in_reset_reset, rst_controller_reset_out_reset:in, rst_translator:in_reset]
+	signal rst_controller_reset_out_reset                                              : std_logic;                     -- rst_controller:reset_out -> [i2c_opencores_0:wb_rst_i, irq_mapper:reset, mm_interconnect_0:nios2_cpu_reset_reset_bridge_in_reset_reset, rst_controller_reset_out_reset:in, rst_translator:in_reset]
 	signal rst_controller_reset_out_reset_req                                          : std_logic;                     -- rst_controller:reset_req -> [nios2_cpu:reset_req, rst_translator:reset_req_in]
 	signal nios2_cpu_debug_reset_request_reset                                         : std_logic;                     -- nios2_cpu:debug_reset_request -> [rst_controller:reset_in1, rst_controller_001:reset_in0]
 	signal rst_controller_001_reset_out_reset                                          : std_logic;                     -- rst_controller_001:reset_out -> [mm_interconnect_0:dual_boot_0_nreset_reset_bridge_in_reset_reset, onchip_memory2_0:reset, rst_controller_001_reset_out_reset:in, rst_translator_001:in_reset]
@@ -915,11 +818,9 @@ architecture rtl of lms_ctr is
 	signal mm_interconnect_0_lms_ctr_gpio_s1_write_ports_inv                           : std_logic;                     -- mm_interconnect_0_lms_ctr_gpio_s1_write:inv -> lms_ctr_gpio:write_n
 	signal mm_interconnect_0_fpga_spi_spi_control_port_read_ports_inv                  : std_logic;                     -- mm_interconnect_0_fpga_spi_spi_control_port_read:inv -> fpga_spi:read_n
 	signal mm_interconnect_0_fpga_spi_spi_control_port_write_ports_inv                 : std_logic;                     -- mm_interconnect_0_fpga_spi_spi_control_port_write:inv -> fpga_spi:write_n
-	signal mm_interconnect_0_dac_spi_spi_control_port_read_ports_inv                   : std_logic;                     -- mm_interconnect_0_dac_spi_spi_control_port_read:inv -> dac_spi:read_n
-	signal mm_interconnect_0_dac_spi_spi_control_port_write_ports_inv                  : std_logic;                     -- mm_interconnect_0_dac_spi_spi_control_port_write:inv -> dac_spi:write_n
 	signal mm_interconnect_0_flash_spi_spi_control_port_read_ports_inv                 : std_logic;                     -- mm_interconnect_0_flash_spi_spi_control_port_read:inv -> flash_spi:read_n
 	signal mm_interconnect_0_flash_spi_spi_control_port_write_ports_inv                : std_logic;                     -- mm_interconnect_0_flash_spi_spi_control_port_write:inv -> flash_spi:write_n
-	signal rst_controller_reset_out_reset_ports_inv                                    : std_logic;                     -- rst_controller_reset_out_reset:inv -> [Av_FIFO_Int_0:rsi_nrst, dac_spi:reset_n, flash_spi:reset_n, fpga_spi:reset_n, leds:reset_n, lms_ctr_gpio:reset_n, nios2_cpu:reset_n, switch:reset_n, sysid_qsys_0:reset_n, vctcxo_tamer_0_ctrl:reset_n]
+	signal rst_controller_reset_out_reset_ports_inv                                    : std_logic;                     -- rst_controller_reset_out_reset:inv -> [Av_FIFO_Int_0:rsi_nrst, flash_spi:reset_n, fpga_spi:reset_n, leds:reset_n, lms_ctr_gpio:reset_n, nios2_cpu:reset_n, switch:reset_n, sysid_qsys_0:reset_n]
 	signal rst_controller_001_reset_out_reset_ports_inv                                : std_logic;                     -- rst_controller_001_reset_out_reset:inv -> [dual_boot_0:nreset, onchip_flash_0:reset_n]
 
 begin
@@ -944,45 +845,6 @@ begin
 			coe_of_d       => exfifo_of_d_export,                                        --       cnd_of_d.export
 			coe_if_rdempty => exfifo_if_rdempty_export,                                  -- cnd_if_rdempty.export
 			coe_fifo_rst   => exfifo_rst_export                                          --   cnd_fifo_rst.export
-		);
-
-	avalon_mm_external_0 : component Avalon_MM_external
-		port map (
-			avs_s0_address       => mm_interconnect_0_avalon_mm_external_0_avs_s0_address,       --       avs_s0.address
-			avs_s0_read          => mm_interconnect_0_avalon_mm_external_0_avs_s0_read,          --             .read
-			avs_s0_readdata      => mm_interconnect_0_avalon_mm_external_0_avs_s0_readdata,      --             .readdata
-			avs_s0_write         => mm_interconnect_0_avalon_mm_external_0_avs_s0_write,         --             .write
-			avs_s0_writedata     => mm_interconnect_0_avalon_mm_external_0_avs_s0_writedata,     --             .writedata
-			avs_s0_waitrequest   => mm_interconnect_0_avalon_mm_external_0_avs_s0_waitrequest,   --             .waitrequest
-			avs_s0_readdatavalid => mm_interconnect_0_avalon_mm_external_0_avs_s0_readdatavalid, --             .readdatavalid
-			clock_clk            => clk_clk,                                                     --        clock.clk
-			reset_reset          => rst_controller_reset_out_reset,                              --        reset.reset
-			avm_m0_address       => avm_m0_address,                                              --       avm_m0.address
-			avm_m0_read          => avm_m0_read,                                                 --             .read
-			avm_m0_waitrequest   => avm_m0_waitrequest,                                          --             .waitrequest
-			avm_m0_readdata      => avm_m0_readdata,                                             --             .readdata
-			avm_m0_write         => avm_m0_write,                                                --             .write
-			avm_m0_writedata     => avm_m0_writedata,                                            --             .writedata
-			avm_m0_readdatavalid => avm_m0_readdatavalid,                                        --             .readdatavalid
-			clock_source_clk     => avm_m0_clk_clk,                                              -- clock_source.clk
-			reset_source_reset   => avm_m0_reset_reset                                           -- reset_source.reset
-		);
-
-	dac_spi : component lms_ctr_dac_spi
-		port map (
-			clk           => clk_clk,                                                    --              clk.clk
-			reset_n       => rst_controller_reset_out_reset_ports_inv,                   --            reset.reset_n
-			data_from_cpu => mm_interconnect_0_dac_spi_spi_control_port_writedata,       -- spi_control_port.writedata
-			data_to_cpu   => mm_interconnect_0_dac_spi_spi_control_port_readdata,        --                 .readdata
-			mem_addr      => mm_interconnect_0_dac_spi_spi_control_port_address,         --                 .address
-			read_n        => mm_interconnect_0_dac_spi_spi_control_port_read_ports_inv,  --                 .read_n
-			spi_select    => mm_interconnect_0_dac_spi_spi_control_port_chipselect,      --                 .chipselect
-			write_n       => mm_interconnect_0_dac_spi_spi_control_port_write_ports_inv, --                 .write_n
-			irq           => irq_mapper_receiver2_irq,                                   --              irq.irq
-			MISO          => dac_spi_ext_MISO,                                           --         external.export
-			MOSI          => dac_spi_ext_MOSI,                                           --                 .export
-			SCLK          => dac_spi_ext_SCLK,                                           --                 .export
-			SS_n          => dac_spi_ext_SS_n                                            --                 .export
 		);
 
 	dual_boot_0 : component altera_dual_boot
@@ -1011,7 +873,7 @@ begin
 			read_n        => mm_interconnect_0_flash_spi_spi_control_port_read_ports_inv,  --                 .read_n
 			spi_select    => mm_interconnect_0_flash_spi_spi_control_port_chipselect,      --                 .chipselect
 			write_n       => mm_interconnect_0_flash_spi_spi_control_port_write_ports_inv, --                 .write_n
-			irq           => irq_mapper_receiver3_irq,                                     --              irq.irq
+			irq           => irq_mapper_receiver2_irq,                                     --              irq.irq
 			MISO          => flash_spi_MISO,                                               --         external.export
 			MOSI          => flash_spi_MOSI,                                               --                 .export
 			SCLK          => flash_spi_SCLK,                                               --                 .export
@@ -1224,15 +1086,6 @@ begin
 			address  => mm_interconnect_0_sysid_qsys_0_control_slave_address(0)  --              .address
 		);
 
-	vctcxo_tamer_0_ctrl : component lms_ctr_vctcxo_tamer_0_ctrl
-		port map (
-			clk      => clk_clk,                                           --                 clk.clk
-			reset_n  => rst_controller_reset_out_reset_ports_inv,          --               reset.reset_n
-			address  => mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_address,  --                  s1.address
-			readdata => mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_readdata, --                    .readdata
-			in_port  => vctcxo_tamer_0_ctrl_export                         -- external_connection.export
-		);
-
 	nios2_cpu_custom_instruction_master_translator : component altera_customins_master_translator
 		generic map (
 			SHARED_COMB_AND_MULTI => 1
@@ -1392,19 +1245,6 @@ begin
 			Av_FIFO_Int_0_avalon_slave_0_readdata          => mm_interconnect_0_av_fifo_int_0_avalon_slave_0_readdata,     --                                         .readdata
 			Av_FIFO_Int_0_avalon_slave_0_writedata         => mm_interconnect_0_av_fifo_int_0_avalon_slave_0_writedata,    --                                         .writedata
 			Av_FIFO_Int_0_avalon_slave_0_chipselect        => mm_interconnect_0_av_fifo_int_0_avalon_slave_0_chipselect,   --                                         .chipselect
-			Avalon_MM_external_0_avs_s0_address            => mm_interconnect_0_avalon_mm_external_0_avs_s0_address,       --              Avalon_MM_external_0_avs_s0.address
-			Avalon_MM_external_0_avs_s0_write              => mm_interconnect_0_avalon_mm_external_0_avs_s0_write,         --                                         .write
-			Avalon_MM_external_0_avs_s0_read               => mm_interconnect_0_avalon_mm_external_0_avs_s0_read,          --                                         .read
-			Avalon_MM_external_0_avs_s0_readdata           => mm_interconnect_0_avalon_mm_external_0_avs_s0_readdata,      --                                         .readdata
-			Avalon_MM_external_0_avs_s0_writedata          => mm_interconnect_0_avalon_mm_external_0_avs_s0_writedata,     --                                         .writedata
-			Avalon_MM_external_0_avs_s0_readdatavalid      => mm_interconnect_0_avalon_mm_external_0_avs_s0_readdatavalid, --                                         .readdatavalid
-			Avalon_MM_external_0_avs_s0_waitrequest        => mm_interconnect_0_avalon_mm_external_0_avs_s0_waitrequest,   --                                         .waitrequest
-			dac_spi_spi_control_port_address               => mm_interconnect_0_dac_spi_spi_control_port_address,          --                 dac_spi_spi_control_port.address
-			dac_spi_spi_control_port_write                 => mm_interconnect_0_dac_spi_spi_control_port_write,            --                                         .write
-			dac_spi_spi_control_port_read                  => mm_interconnect_0_dac_spi_spi_control_port_read,             --                                         .read
-			dac_spi_spi_control_port_readdata              => mm_interconnect_0_dac_spi_spi_control_port_readdata,         --                                         .readdata
-			dac_spi_spi_control_port_writedata             => mm_interconnect_0_dac_spi_spi_control_port_writedata,        --                                         .writedata
-			dac_spi_spi_control_port_chipselect            => mm_interconnect_0_dac_spi_spi_control_port_chipselect,       --                                         .chipselect
 			dual_boot_0_avalon_address                     => mm_interconnect_0_dual_boot_0_avalon_address,                --                       dual_boot_0_avalon.address
 			dual_boot_0_avalon_write                       => mm_interconnect_0_dual_boot_0_avalon_write,                  --                                         .write
 			dual_boot_0_avalon_read                        => mm_interconnect_0_dual_boot_0_avalon_read,                   --                                         .read
@@ -1469,9 +1309,7 @@ begin
 			switch_s1_address                              => mm_interconnect_0_switch_s1_address,                         --                                switch_s1.address
 			switch_s1_readdata                             => mm_interconnect_0_switch_s1_readdata,                        --                                         .readdata
 			sysid_qsys_0_control_slave_address             => mm_interconnect_0_sysid_qsys_0_control_slave_address,        --               sysid_qsys_0_control_slave.address
-			sysid_qsys_0_control_slave_readdata            => mm_interconnect_0_sysid_qsys_0_control_slave_readdata,       --                                         .readdata
-			vctcxo_tamer_0_ctrl_s1_address                 => mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_address,            --                   vctcxo_tamer_0_ctrl_s1.address
-			vctcxo_tamer_0_ctrl_s1_readdata                => mm_interconnect_0_vctcxo_tamer_0_ctrl_s1_readdata            --                                         .readdata
+			sysid_qsys_0_control_slave_readdata            => mm_interconnect_0_sysid_qsys_0_control_slave_readdata        --                                         .readdata
 		);
 
 	irq_mapper : component lms_ctr_irq_mapper
@@ -1481,7 +1319,6 @@ begin
 			receiver0_irq => irq_mapper_receiver0_irq,       -- receiver0.irq
 			receiver1_irq => irq_mapper_receiver1_irq,       -- receiver1.irq
 			receiver2_irq => irq_mapper_receiver2_irq,       -- receiver2.irq
-			receiver3_irq => irq_mapper_receiver3_irq,       -- receiver3.irq
 			sender_irq    => nios2_cpu_irq_irq               --    sender.irq
 		);
 
@@ -1626,10 +1463,6 @@ begin
 	mm_interconnect_0_fpga_spi_spi_control_port_read_ports_inv <= not mm_interconnect_0_fpga_spi_spi_control_port_read;
 
 	mm_interconnect_0_fpga_spi_spi_control_port_write_ports_inv <= not mm_interconnect_0_fpga_spi_spi_control_port_write;
-
-	mm_interconnect_0_dac_spi_spi_control_port_read_ports_inv <= not mm_interconnect_0_dac_spi_spi_control_port_read;
-
-	mm_interconnect_0_dac_spi_spi_control_port_write_ports_inv <= not mm_interconnect_0_dac_spi_spi_control_port_write;
 
 	mm_interconnect_0_flash_spi_spi_control_port_read_ports_inv <= not mm_interconnect_0_flash_spi_spi_control_port_read;
 

@@ -240,11 +240,11 @@ begin
    -- Decoding logic
    -- ---------------------------------------------------------------------------------------------
          --FPGA direct clocking
-      from_fpgacfg.phase_reg_sel       <= mem(4);
+--    from_fpgacfg.phase_reg_sel       <= mem(4);
       from_fpgacfg.drct_clk_en         <= mem(5);
-      from_fpgacfg.clk_ind             <= mem(6) (4 downto 0);
-      from_fpgacfg.cnt_ind             <= mem(6) (9 downto 5);
-      from_fpgacfg.load_phase_reg      <= mem(6) (10);
+--    from_fpgacfg.clk_ind             <= mem(6) (4 downto 0);
+--    from_fpgacfg.cnt_ind             <= mem(6) (9 downto 5);
+--    from_fpgacfg.load_phase_reg      <= mem(6) (10);
       --Interface Config
       from_fpgacfg.ch_en               <= mem(7);
       from_fpgacfg.smpl_width          <= mem(8) (1 downto 0);
@@ -252,30 +252,30 @@ begin
       from_fpgacfg.ddr_en              <= mem(8) (6);
       from_fpgacfg.trxiq_pulse         <= mem(8) (7);
       from_fpgacfg.mimo_int_en         <= mem(8) (8);
-      from_fpgacfg.synch_dis           <= mem(8) (9);
-      from_fpgacfg.synch_mode          <= mem(8) (10);
+--    from_fpgacfg.synch_dis           <= mem(8) (9);
+--    from_fpgacfg.synch_mode          <= mem(8) (10);
       from_fpgacfg.smpl_nr_clr         <= mem(9) (0);
       from_fpgacfg.txpct_loss_clr      <= mem(9) (1);
       from_fpgacfg.rx_en               <= mem(10) (0);
-      from_fpgacfg.tx_en               <= mem(10) (1);
+--    from_fpgacfg.tx_en               <= mem(10) (1);
       from_fpgacfg.rx_ptrn_en          <= mem(10) (8);
-      from_fpgacfg.tx_ptrn_en          <= mem(10) (9);
-      from_fpgacfg.tx_cnt_en           <= mem(10) (10);
+--    from_fpgacfg.tx_ptrn_en          <= mem(10) (9);
+--    from_fpgacfg.tx_cnt_en           <= mem(10) (10);
       
-      from_fpgacfg.wfm_ch_en           <= mem(12) (15 downto 0);
-      from_fpgacfg.wfm_play            <= mem(13) (1);
-      from_fpgacfg.wfm_load            <= mem(13) (2);
-      from_fpgacfg.wfm_smpl_width      <= mem(13) (1 downto 0);
+--    from_fpgacfg.wfm_ch_en           <= mem(12) (15 downto 0);
+--    from_fpgacfg.wfm_play            <= mem(13) (1);
+--    from_fpgacfg.wfm_load            <= mem(13) (2);
+--    from_fpgacfg.wfm_smpl_width      <= mem(13) (1 downto 0);
       
-      from_fpgacfg.sync_size           <= mem(15) (15 downto 0);
-      from_fpgacfg.txant_pre           <= mem(16) (15 downto 0);
-      from_fpgacfg.txant_post          <= mem(17) (15 downto 0);
+--    from_fpgacfg.sync_size           <= mem(15) (15 downto 0);
+--    from_fpgacfg.txant_pre           <= mem(16) (15 downto 0);
+--    from_fpgacfg.txant_post          <= mem(17) (15 downto 0);
 
-      for_loop : for i in 0 to 15 generate --to prevent SPI_SS to go low on same time as sen
-         from_fpgacfg.SPI_SS(i)<= mem(18)(i) OR (NOT sen);
-      end generate;
+--    for_loop : for i in 0 to 15 generate --to prevent SPI_SS to go low on same time as sen
+--       from_fpgacfg.SPI_SS(i)<= mem(18)(i) OR (NOT sen);
+--    end generate;
       
-      from_fpgacfg.LMS1_SS             <= mem(19)(0) OR (NOT sen); --to prevent SPI_SS to go low on same time as sen
+--    from_fpgacfg.LMS1_SS             <= mem(19)(0) OR (NOT sen); --to prevent SPI_SS to go low on same time as sen
       from_fpgacfg.LMS1_RESET          <= mem(19)(1);
       from_fpgacfg.LMS1_CORE_LDO_EN    <= mem(19)(2);
       from_fpgacfg.LMS1_TXNRX1         <= mem(19)(3); 
@@ -297,7 +297,7 @@ begin
       from_fpgacfg.FPGA_LED5_CTRL      <= mem(26)(14 downto 12);
       from_fpgacfg.FPGA_LED1_CTRL      <= mem(27)(2  downto 0 );      
       from_fpgacfg.CLK_ENA             <= mem(29)(3 downto 0);
-      from_fpgacfg.sync_pulse_period   <= mem(30)(15 downto 0) & mem(31)(15 downto 0);
+--    from_fpgacfg.sync_pulse_period   <= mem(30)(15 downto 0) & mem(31)(15 downto 0);
 
 
 end fpgacfg_arch;

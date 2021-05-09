@@ -36,7 +36,7 @@ end rxiq_siso_sdr;
 architecture arch of rxiq_siso_sdr is
 --declare signals,  components here
 
-signal sdr_reg_0        	: std_logic_vector(iq_width downto 0);
+signal reg_l_0        	   : std_logic_vector(iq_width downto 0);
 
 signal diq_pos0_reg       	: std_logic_vector(iq_width-1 downto 0);
 signal diq_pos1_reg        : std_logic_vector(iq_width-1 downto 0);
@@ -48,37 +48,37 @@ signal diq_pos1_cap_en		: std_logic;
 signal diq_pos2_cap_en		: std_logic;
 signal diq_pos3_cap_en		: std_logic;
 
-signal sdr_diq_valid    	: std_logic;
-signal sdr_fifo_data			: std_logic_vector(iq_width*4-1 downto 0);
-signal sdr_fifo_data_valid	: std_logic;
+signal diq_valid    	      : std_logic;
+signal fifo_data			   : std_logic_vector(iq_width*4-1 downto 0);
+signal fifo_data_valid	   : std_logic;
 
  
 begin
 
-sdr_diq_valid<=(sdr_reg_0(iq_width) XOR DIQ_l(iq_width));
+diq_valid<= (reg_l_0(iq_width) XOR DIQ_l(iq_width));
 
 
- sdr_reg_proc : process(reset_n, clk)
+ reg_proc : process(reset_n, clk)
     begin
       if reset_n='0' then
-			sdr_reg_0<=(others=>'0');
+         reg_l_0<=(others=>'0');
       elsif (clk'event and clk = '1') then
-			sdr_reg_0<=DIQ_l; 
+         reg_l_0<=DIQ_l; 
  	    end if;
     end process;
+    
+  diq_pos0_cap_en <= not (diq_pos1_cap_en OR diq_pos2_cap_en);
 
 -- ----------------------------------------------------------------------------
 -- To capture DIQ data in 0 position (frame start)
 -- ----------------------------------------------------------------------------
-diq_pos0_cap_en <= not (diq_pos1_cap_en OR diq_pos2_cap_en);
-
  diq_pos0_reg_proc : process(reset_n, clk)
     begin
       if reset_n='0' then
          diq_pos0_reg 		<= (others=>'0');
 			diq_pos1_cap_en 	<= '0'; 
       elsif (clk'event and clk = '1') then
-			if DIQ_l(iq_width) = fidm AND sdr_diq_valid='1' AND diq_pos0_cap_en='1' then 
+			if DIQ_l(iq_width) = fidm AND diq_valid='1' AND diq_pos0_cap_en='1' then 
          	diq_pos0_reg 		<= DIQ_l(iq_width-1 downto 0);
 				diq_pos1_cap_en	<= '1';
 			else 
@@ -91,14 +91,13 @@ diq_pos0_cap_en <= not (diq_pos1_cap_en OR diq_pos2_cap_en);
 -- ----------------------------------------------------------------------------
 -- To capture DIQ data in 1 position
 -- ----------------------------------------------------------------------------
-
  diq_pos1_reg_proc : process(reset_n, clk)
     begin
       if reset_n='0' then
          diq_pos1_reg <= (others=>'0');
 			diq_pos2_cap_en <= '0';  
       elsif (clk'event and clk = '1') then
-			if DIQ_l(iq_width) = NOT fidm AND sdr_diq_valid='1' AND diq_pos1_cap_en='1' then 
+			if DIQ_l(iq_width) = NOT fidm AND diq_valid='1' AND diq_pos1_cap_en='1' then 
          	diq_pos1_reg <= DIQ_l(iq_width-1 downto 0);
 				diq_pos2_cap_en <= '1';
 			else 
@@ -111,14 +110,13 @@ diq_pos0_cap_en <= not (diq_pos1_cap_en OR diq_pos2_cap_en);
 -- ----------------------------------------------------------------------------
 -- To capture DIQ data in 2 position (frame start)
 -- ----------------------------------------------------------------------------
-
  diq_pos2_reg_proc : process(reset_n, clk)
     begin
       if reset_n='0' then
          diq_pos2_reg <= (others=>'0');
 			diq_pos3_cap_en <= '0';  
       elsif (clk'event and clk = '1') then
-			if DIQ_l(iq_width) = fidm AND sdr_diq_valid='1' AND diq_pos2_cap_en='1' then 
+			if DIQ_l(iq_width) = fidm AND diq_valid='1' AND diq_pos2_cap_en='1' then 
          	diq_pos2_reg <= DIQ_l(iq_width-1 downto 0);
 				diq_pos3_cap_en <= '1';
 			else 
@@ -136,32 +134,38 @@ diq_pos3_reg_proc : process(reset_n, clk)
       if reset_n='0' then
          diq_pos3_reg <= (others=>'0'); 
       elsif (clk'event and clk = '1') then
-			if DIQ_l(iq_width) = NOT fidm AND sdr_diq_valid='1' AND diq_pos3_cap_en='1' then 
+			if DIQ_l(iq_width) = NOT fidm AND diq_valid='1' AND diq_pos3_cap_en='1' then 
          	diq_pos3_reg <= DIQ_l(iq_width-1 downto 0);
 			else 
 				diq_pos3_reg <= diq_pos3_reg;
 			end if; 
  	    end if;
     end process;
-    
---sdr_fifo_data <= diq_pos0_reg & diq_pos1_reg & diq_pos2_reg & diq_pos3_reg;
-sdr_fifo_data <= diq_pos3_reg & diq_pos2_reg & diq_pos1_reg & diq_pos0_reg;
+ 
 
-sdr_fifo_data_valid_proc : process(reset_n, clk)
+-- ----------------------------------------------------------------------------
+-- FIFO data and FIFO data valid signals
+-- ---------------------------------------------------------------------------- 
+--fifo_data <= diq_pos0_reg & diq_pos1_reg & diq_pos2_reg & diq_pos3_reg;
+fifo_data <= diq_pos3_reg & diq_pos2_reg & diq_pos1_reg & diq_pos0_reg;
+
+fifo_data_valid_proc : process(reset_n, clk)
     begin
       if reset_n='0' then
-         sdr_fifo_data_valid<='0'; 
+         fifo_data_valid<='0'; 
       elsif (clk'event and clk = '1') then
 			if diq_pos3_cap_en='1' then 
-         	sdr_fifo_data_valid <= '1';
+         	fifo_data_valid <= '1';
 			else 
-				sdr_fifo_data_valid <= '0';
+				fifo_data_valid <= '0';
 			end if; 
  	    end if;
     end process;
     
-fifo_wdata <= sdr_fifo_data;
-fifo_wrreq <= sdr_fifo_data_valid AND NOT fifo_wfull;
+    
+--to external ports    
+fifo_wdata <= fifo_data;
+fifo_wrreq <= fifo_data_valid AND NOT fifo_wfull;
     
  
 end arch;   
