@@ -26,7 +26,6 @@ entity nios_cpu is
       -- CFG_START_ADDR has to be multiple of 32, because there are 32 addresses
       FPGACFG_START_ADDR   : integer := 0;
       PLLCFG_START_ADDR    : integer := 32;
-      TSTCFG_START_ADDR    : integer := 64;
       PERIPHCFG_START_ADDR : integer := 192
       );
    port (
@@ -63,9 +62,6 @@ entity nios_cpu is
       to_fpgacfg           : in     t_TO_FPGACFG;
       from_pllcfg          : out    t_FROM_PLLCFG;
       to_pllcfg            : in     t_TO_PLLCFG;
-      from_tstcfg          : out    t_FROM_TSTCFG;
-      to_tstcfg            : in     t_TO_TSTCFG;
-      to_tstcfg_from_rxtx  : in     t_TO_TSTCFG_FROM_RXTX;
       to_periphcfg         : in     t_TO_PERIPHCFG;
       from_periphcfg       : out    t_FROM_PERIPHCFG;
       
@@ -215,7 +211,6 @@ begin
    generic map (
       FPGACFG_START_ADDR   => FPGACFG_START_ADDR,
       PLLCFG_START_ADDR    => PLLCFG_START_ADDR,
-      TSTCFG_START_ADDR    => TSTCFG_START_ADDR,
       PERIPHCFG_START_ADDR => PERIPHCFG_START_ADDR
       )
    port map(
@@ -231,9 +226,6 @@ begin
       from_fpgacfg         => from_fpgacfg,
       to_pllcfg            => to_pllcfg,
       from_pllcfg          => from_pllcfg,
-      to_tstcfg            => to_tstcfg,
-      from_tstcfg          => from_tstcfg,
-      to_tstcfg_from_rxtx  => to_tstcfg_from_rxtx,
       to_periphcfg         => to_periphcfg,
       from_periphcfg       => from_periphcfg
    );

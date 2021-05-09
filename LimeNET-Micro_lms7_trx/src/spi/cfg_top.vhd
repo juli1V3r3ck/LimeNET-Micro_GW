@@ -25,7 +25,6 @@ entity cfg_top is
       -- CFG_START_ADDR has to be multiple of 32, because there are 32 addresses
       FPGACFG_START_ADDR   : integer := 0;
       PLLCFG_START_ADDR    : integer := 32;
-      TSTCFG_START_ADDR    : integer := 64;
       PERIPHCFG_START_ADDR : integer := 192
       );
    port (
@@ -41,9 +40,6 @@ entity cfg_top is
       from_fpgacfg         : out t_FROM_FPGACFG;
       to_pllcfg            : in  t_TO_PLLCFG;
       from_pllcfg          : out t_FROM_PLLCFG;
-      to_tstcfg            : in  t_TO_TSTCFG;
-      to_tstcfg_from_rxtx  : in  t_TO_TSTCFG_FROM_RXTX;
-      from_tstcfg          : out t_FROM_TSTCFG;
       to_periphcfg         : in  t_TO_PERIPHCFG;
       from_periphcfg       : out t_FROM_PERIPHCFG
    );
@@ -59,9 +55,6 @@ signal inst0_sdout   : std_logic;
 
 --inst1
 signal inst1_sdoutA  : std_logic;
-
---inst3
-signal inst3_sdout   : std_logic;
 
 --inst6
 signal inst6_sdout   : std_logic;
@@ -118,30 +111,6 @@ begin
       to_pllcfg      => to_pllcfg,
       from_pllcfg    => from_pllcfg
    );
-   
--- ----------------------------------------------------------------------------
--- tstcfg instance
--- ----------------------------------------------------------------------------    
-   tstcfg_inst3 : entity work.tstcfg
-   port map(
-      -- Address and location of this module
-      -- Will be hard wired at the top level
-      maddress             => std_logic_vector(to_unsigned(TSTCFG_START_ADDR/32,10)),
-      mimo_en              => '1',   
-      -- Serial port IOs
-      sdin                 => sdin,
-      sclk                 => sclk,
-      sen                  => sen,
-      sdout                => inst3_sdout,  
-      -- Signals coming from the pins or top level serial interface
-      lreset               => lreset,   -- Logic reset signal, resets logic cells only  (use only one reset)
-      mreset               => mreset,   -- Memory reset signal, resets configuration memory only (use only one reset)      
-      oen                  => open,
-      stateo               => open,    
-      to_tstcfg            => to_tstcfg,
-      to_tstcfg_from_rxtx  => to_tstcfg_from_rxtx,
-      from_tstcfg          => from_tstcfg
-   );
 
    
 -- ----------------------------------------------------------------------------
@@ -169,7 +138,7 @@ begin
 -- ----------------------------------------------------------------------------
 -- Output ports
 -- ----------------------------------------------------------------------------    
-   sdout <= inst0_sdout OR inst1_sdoutA OR inst3_sdout OR inst6_sdout;
+   sdout <= inst0_sdout OR inst1_sdoutA OR inst6_sdout;
   
 end arch;   
 

@@ -42,7 +42,6 @@ entity lms7_trx_top is
       -- Internal configuration memory 
       FPGACFG_START_ADDR      : integer := 0;
       PLLCFG_START_ADDR       : integer := 32;
-      TSTCFG_START_ADDR       : integer := 96;
       PERIPHCFG_START_ADDR    : integer := 192
    );
    port (
@@ -183,8 +182,6 @@ signal inst0_from_fpgacfg        : t_FROM_FPGACFG;
 signal inst0_to_fpgacfg          : t_TO_FPGACFG;
 signal inst0_from_pllcfg         : t_FROM_PLLCFG;
 signal inst0_to_pllcfg           : t_TO_PLLCFG;
-signal inst0_from_tstcfg         : t_FROM_TSTCFG;
-signal inst0_to_tstcfg           : t_TO_TSTCFG;
 signal inst0_from_periphcfg      : t_FROM_PERIPHCFG;
 signal inst0_to_periphcfg        : t_TO_PERIPHCFG;
 signal inst0_cfg_top_CS          : std_logic;
@@ -245,7 +242,6 @@ signal inst6_rx_pct_fifo_wrreq      : std_logic;
 signal inst6_rx_pct_fifo_wdata      : std_logic_vector(63 downto 0);
 signal inst6_rx_smpl_cmp_done       : std_logic;
 signal inst6_rx_smpl_cmp_err        : std_logic;
-signal inst6_to_tstcfg_from_rxtx    : t_TO_TSTCFG_FROM_RXTX;
 signal inst6_rx_pct_fifo_aclrn_req  : std_logic;
 signal inst6_tx_in_pct_reset_n_req  : std_logic;
 signal inst6_wfm_in_pct_reset_n_req : std_logic;
@@ -333,7 +329,6 @@ begin
    generic map (
       FPGACFG_START_ADDR   => FPGACFG_START_ADDR,
       PLLCFG_START_ADDR    => PLLCFG_START_ADDR,
-      TSTCFG_START_ADDR    => TSTCFG_START_ADDR,
       PERIPHCFG_START_ADDR => PERIPHCFG_START_ADDR
    )
    port map(
@@ -362,7 +357,7 @@ begin
       i2c_sda                    => FPGA_I2C_SDA,
       -- Genral purpose I/O
       --gpi                        => "0000" & FPGA_SW(3 downto 1) &  (FPGA_SW(0) AND NOT inst0_from_tstcfg.BOOT_EN),
-      gpi                        => "0000" & "000" &  ('0' AND NOT inst0_from_tstcfg.BOOT_EN),
+      gpi                        => "00000000",
       gpo                        => inst0_gpo, 
       -- LMS7002 control 
       lms_ctr_gpio               => inst0_lms_ctr_gpio,
@@ -371,9 +366,6 @@ begin
       to_fpgacfg                 => inst0_to_fpgacfg,
       from_pllcfg                => inst0_from_pllcfg,
       to_pllcfg                  => inst0_to_pllcfg,
-      from_tstcfg                => inst0_from_tstcfg,
-      to_tstcfg                  => inst0_to_tstcfg,
-      to_tstcfg_from_rxtx        => inst6_to_tstcfg_from_rxtx,
       from_periphcfg             => inst0_from_periphcfg,
       to_periphcfg               => inst0_to_periphcfg,
       
@@ -519,30 +511,6 @@ begin
       -- status
       EP_act         => inst2_EP_act
    );
-
--- ----------------------------------------------------------------------------
--- tst_top instance.
--- Clock test logic
--- ----------------------------------------------------------------------------
-   inst3_tst_top : entity work.tst_top
-   port map(
-      --input ports 
-      FX3_clk           => FT_CLK,
-      reset_n           => reset_n_ft_clk,    
-      Si5351C_clk_0     => '0',
-      Si5351C_clk_1     => '0',
-      Si5351C_clk_2     => '0',
-      Si5351C_clk_3     => '0',
-      Si5351C_clk_5     => '0',
-      Si5351C_clk_6     => '0',
-      Si5351C_clk_7     => '0',
-      LMK_CLK           => LMK_CLK,
-      ADF_MUXOUT        => ADF_MUXOUT,    
-   
-      -- To configuration memory
-      to_tstcfg         => inst0_to_tstcfg,
-      from_tstcfg       => inst0_from_tstcfg
-   );
    
 -- ----------------------------------------------------------------------------
 -- general_periph_top instance.
@@ -655,8 +623,6 @@ begin
    )
    port map(                                             
       from_fpgacfg            => inst0_from_fpgacfg,
-      to_tstcfg_from_rxtx     => inst6_to_tstcfg_from_rxtx,
-      from_tstcfg             => inst0_from_tstcfg,
       -- RX path
       rx_clk                  => inst1_pll_c3,
       rx_clk_reset_n          => inst1_pll_locked,
