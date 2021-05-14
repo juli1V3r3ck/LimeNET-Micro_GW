@@ -1,0 +1,413 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench
+Ediq2fifo
+Z1 w1619120196
+Z2 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+R0
+8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/diq2fifo.vhd
+FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/diq2fifo.vhd
+l0
+L15
+VWZf1Cmi?8_j4hGdo6O`iN0
+!s100 nYDP[Z`fYV859[3RTE<TP1
+Z5 OV;C;10.5b;63
+32
+!s110 1620998368
+!i10b 1
+!s108 1620998368.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/diq2fifo.vhd|
+!s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/diq2fifo.vhd|
+!i113 1
+Z6 o-work work -2002 -explicit
+Z7 tExplicit 1 CvgOpt 0
+Erxiq
+R1
+R2
+R3
+R4
+R0
+Z8 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd
+Z9 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd
+l0
+L15
+VDWd0NUUUf:=BD9FL>GA[O3
+!s100 Ei7QB=nh^JP?8;8djL=2U0
+R5
+32
+Z10 !s110 1621003228
+!i10b 1
+Z11 !s108 1621003228.000000
+Z12 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd|
+Z13 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd|
+!i113 1
+R6
+R7
+Aarch
+Z14 DEx4 work 9 rxiq_mimo 0 22 ?0F;dHgCL6o]f5I83>U`33
+Z15 DEx4 work 9 rxiq_siso 0 22 gT;45^XZ9Aa50T=K>3;`D1
+R2
+R3
+R4
+DEx4 work 4 rxiq 0 22 DWd0NUUUf:=BD9FL>GA[O3
+l61
+L42
+V@bR]cb@JKmCciGMTT2_Mo0
+!s100 mcFg9?S=n71>9c@DPn;7E2
+R5
+32
+R10
+!i10b 1
+R11
+R12
+R13
+!i113 1
+R6
+R7
+Erxiq_mimo
+R1
+R2
+R3
+R4
+R0
+Z16 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd
+Z17 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd
+l0
+L15
+V?0F;dHgCL6o]f5I83>U`33
+!s100 @OUf3oih_okQMg?Vh`W?R1
+R5
+32
+R10
+!i10b 1
+R11
+Z18 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd|
+Z19 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd|
+!i113 1
+R6
+R7
+Aarch
+Z20 DEx4 work 13 rxiq_mimo_ddr 0 22 PXU@KN5kcmUeHbU4hGS3:3
+R2
+R3
+R4
+R14
+l61
+L38
+Va<`Rhg?o1f]fBeMFMa@182
+!s100 6oHMeJH0z^b3YIjDg7FG:2
+R5
+32
+R10
+!i10b 1
+R11
+R18
+R19
+!i113 1
+R6
+R7
+Erxiq_mimo_ddr
+R1
+R2
+R3
+R4
+R0
+Z21 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd
+Z22 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd
+l0
+L15
+VPXU@KN5kcmUeHbU4hGS3:3
+!s100 1K1=S`?2n4FZIINK<_2he3
+R5
+32
+R10
+!i10b 1
+R11
+Z23 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd|
+Z24 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd|
+!i113 1
+R6
+R7
+Aarch
+R2
+R3
+R4
+R20
+l87
+L37
+ViaVRiT9iTMcK>K_YXo@T72
+!s100 n4l;5PbLAa1:0hdec7`2h0
+R5
+32
+R10
+!i10b 1
+R11
+R23
+R24
+!i113 1
+R6
+R7
+Erxiq_pulse_ddr
+R1
+R2
+R3
+R4
+R0
+Z25 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd
+Z26 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd
+l0
+L15
+VF;B0GRNi=L6TaVgCHf1>X1
+!s100 ffGBg[DlkH5ZzC]4O[9lX1
+R5
+32
+R10
+!i10b 1
+R11
+Z27 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd|
+Z28 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd|
+!i113 1
+R6
+R7
+Aarch
+R2
+R3
+R4
+DEx4 work 14 rxiq_pulse_ddr 0 22 F;B0GRNi=L6TaVgCHf1>X1
+l87
+L37
+VHmfc3GG:3kn=WO@n0J<>Y3
+!s100 7GMT]zXKce6TSD;zgOSga0
+R5
+32
+R10
+!i10b 1
+R11
+R27
+R28
+!i113 1
+R6
+R7
+Erxiq_siso
+R1
+R2
+R3
+R4
+R0
+Z29 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd
+Z30 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd
+l0
+L15
+VgT;45^XZ9Aa50T=K>3;`D1
+!s100 =COeFKSki0X;A9_0^0TDj3
+R5
+32
+R10
+!i10b 1
+R11
+Z31 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd|
+Z32 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd|
+!i113 1
+R6
+R7
+Aarch
+Z33 DEx4 work 13 rxiq_siso_ddr 0 22 Z[631D=E`o=S5Yj]XQ[962
+Z34 DEx4 work 13 rxiq_siso_sdr 0 22 7Hn29Jj20E7cSLl`7[hof0
+R2
+R3
+R4
+R15
+l59
+L37
+V4N8<7@GU0]Jnd;?[zXI=g3
+!s100 =HkkahBbdQQIe7Y<SKZnK2
+R5
+32
+R10
+!i10b 1
+R11
+R31
+R32
+!i113 1
+R6
+R7
+Erxiq_siso_ddr
+R1
+R2
+R3
+R4
+R0
+Z35 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd
+Z36 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd
+l0
+L15
+VZ[631D=E`o=S5Yj]XQ[962
+!s100 F?=j;PND0LjQO1:@iI6>f0
+R5
+32
+Z37 !s110 1621003229
+!i10b 1
+R11
+Z38 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd|
+Z39 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd|
+!i113 1
+R6
+R7
+Aarch
+R2
+R3
+R4
+R33
+l54
+L36
+Vl8iRm50jg_KXUbVnJLnh71
+!s100 Rf9Xm4N6D?G<WAA<?z5W_2
+R5
+32
+R37
+!i10b 1
+R11
+R38
+R39
+!i113 1
+R6
+R7
+Erxiq_siso_sdr
+R1
+R2
+R3
+R4
+R0
+Z40 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd
+Z41 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd
+l0
+L15
+V7Hn29Jj20E7cSLl`7[hof0
+!s100 5FGM`GQO?JQ6D]dgU^hOX1
+R5
+32
+R37
+!i10b 1
+Z42 !s108 1621003229.000000
+Z43 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd|
+Z44 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd|
+!i113 1
+R6
+R7
+Aarch
+R2
+R3
+R4
+R34
+l56
+L36
+VSA2W247OiQ7bb>:o24`Uh3
+!s100 eFTE<ShkO?c<^^cYNU1zm3
+R5
+32
+R37
+!i10b 1
+R42
+R43
+R44
+!i113 1
+R6
+R7
+vrxiq_tb
+Z45 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+R37
+!i10b 1
+!s100 ;JhWBQC@UC:7?iii_i?gc1
+IhfffhcLgKYB?]RhT2h_2?0
+VDg1SIo80bB@j0V0VzS_@n1
+!s105 rxiq_tb_sv_unit
+S1
+R0
+Z46 w1621003226
+Z47 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv
+Z48 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv
+L0 4
+Z49 OV;L;10.5b;63
+r1
+!s85 0
+31
+R42
+Z50 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv|
+Z51 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv|
+!i113 1
+Z52 o-work work -sv
+Z53 tCvgOpt 0
+Xrxiq_tb_sv_unit
+R45
+R37
+!i10b 1
+!s100 Bzge_?=D8gPTQ@>[YaFkK2
+Iz<ELDAQ0o:5:Lmi^zU46c3
+Vz<ELDAQ0o:5:Lmi^zU46c3
+!i103 1
+S1
+R0
+R46
+R47
+R48
+L0 61
+R49
+r1
+!s85 0
+31
+R42
+R50
+R51
+!i113 1
+R52
+R53
+Etest_data_dd
+R1
+R2
+R3
+R4
+R0
+Z54 8C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd
+Z55 FC:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd
+l0
+L15
+VdJDQDQdFih1e9]SlJ5n1V3
+!s100 Ulbnno_ZdUlN^OSih_4e81
+R5
+32
+R10
+!i10b 1
+R11
+Z56 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd|
+Z57 !s107 C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd|
+!i113 1
+R6
+R7
+Aarch
+R2
+R3
+R4
+DEx4 work 12 test_data_dd 0 22 dJDQDQdFih1e9]SlJ5n1V3
+l43
+L34
+VUnk_X:Nbd4j90=IF@X=mB2
+!s100 ZMzV?NYW`Yk[SkIc<X<HS2
+R5
+32
+R10
+!i10b 1
+R11
+R56
+R57
+!i113 1
+R6
+R7

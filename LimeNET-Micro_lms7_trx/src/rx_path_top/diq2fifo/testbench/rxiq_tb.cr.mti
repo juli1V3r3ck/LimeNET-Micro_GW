@@ -1,0 +1,87 @@
+C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq
+-- Compiling architecture arch of rxiq
+-- Loading entity rxiq_siso
+-- Loading entity rxiq_mimo
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/test_data_dd.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity test_data_dd
+-- Compiling architecture arch of test_data_dd
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_mimo
+-- Compiling architecture arch of rxiq_mimo
+-- Loading entity rxiq_mimo_ddr
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_pulse_ddr.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_pulse_ddr
+-- Compiling architecture arch of rxiq_pulse_ddr
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_siso
+-- Compiling architecture arch of rxiq_siso
+-- Loading entity rxiq_siso_sdr
+-- Loading entity rxiq_siso_ddr
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_sdr.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_siso_sdr
+-- Compiling architecture arch of rxiq_siso_sdr
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv {2 {vlog -work work -sv -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module rxiq_tb
+** Warning: C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv(61): (vlog-2283) Extra semicolon in $unit (global) scope.
+** Warning: C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/testbench/rxiq_tb.sv(62): (vlog-2284) Empty $unit scope found.
+
+Top level modules:
+	rxiq_tb
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_mimo_ddr.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_mimo_ddr
+-- Compiling architecture arch of rxiq_mimo_ddr
+
+} {} {}} C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/95juj/Documents/Git/LimeNET-Micro_GW/LimeNET-Micro_lms7_trx/src/rx_path_top/diq2fifo/synth/rxiq_siso_ddr.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity rxiq_siso_ddr
+-- Compiling architecture arch of rxiq_siso_ddr
+
+} {} {}}
