@@ -216,8 +216,7 @@ diq2fifo_inst0 : entity work.diq2fifo
       smpl_cmp_start    => smpl_cmp_start_sync,
       smpl_cmp_length   => smpl_cmp_length_sync,
       smpl_cmp_done     => smpl_cmp_done,
-      smpl_cmp_err      => smpl_cmp_err,
-      smpl_cnt_en       => open
+      smpl_cmp_err      => smpl_cmp_err
         );
         
         
