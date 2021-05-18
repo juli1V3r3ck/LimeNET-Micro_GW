@@ -138,7 +138,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to LMS_DIQ1_D[11]
 set_global_assignment -name POST_FLOW_SCRIPT_FILE "quartus_sh:gen_prg_files.tcl"
 set_global_assignment -name AUTO_MERGE_PLLS OFF
 set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS OFF
-set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
+set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE AREA"
 set_instance_assignment -name IO_STANDARD "2.5 V" -to altera_reserved_tms
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to LMS_TXNRX2
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to LMS_TXNRX1

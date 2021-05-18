@@ -18,10 +18,22 @@ module preamble_detect (
 		output wire        avalon_streaming_source_valid  //                        .valid
 	);
 
-	// TODO: Auto-generated HDL template
+	reg [23:0] avs_src_data_reg;
+	reg avs_src_valid_reg;
 
-	assign avalon_streaming_source_valid = 1'b0;
+	always @(posedge clock_sink_clk) begin
+		if (reset_sink_reset) begin
+			avs_src_data_reg  <= 'b0;
+			avs_src_valid_reg <= 'b0;
+		end
+		else begin
+			avs_src_data_reg  <= avalon_streaming_sink_data;
+			avs_src_valid_reg <= avalon_streaming_sink_valid;
+		end
+	end
 
-	assign avalon_streaming_source_data = 24'b000000000000000000000000;
+	assign avalon_streaming_source_valid = avs_src_valid_reg;
+
+	assign avalon_streaming_source_data = avs_src_data_reg;
 
 endmodule
