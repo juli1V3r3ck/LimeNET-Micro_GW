@@ -216,8 +216,7 @@ diq2fifo_inst0 : entity work.diq2fifo
       smpl_cmp_start    => smpl_cmp_start_sync,
       smpl_cmp_length   => smpl_cmp_length_sync,
       smpl_cmp_done     => smpl_cmp_done,
-      smpl_cmp_err      => smpl_cmp_err,
-      smpl_cnt_en       => open
+      smpl_cmp_err      => smpl_cmp_err
         );
         
         
@@ -231,7 +230,7 @@ smpl_fifo_wrreq_out <= inst0_fifo_wrreq;
 dsp_subsystem_inst11 : component lms_dsp
   port map (
 		clk_clk         => clk,                 --      clk.clk
-		dsp_en_en       => '1',                 --   dsp_en.en
+		dsp_en_en       => '0',                 --   dsp_en.en
 		fifo_in_wdata   => inst11_fifo_wdata,   --  fifo_in.wdata
 		fifo_in_wrreq   => inst11_fifo_wrreq,   --         .wrreq
 		fifo_out_wrdata => inst0_fifo_wdata,    -- fifo_out.wrdata

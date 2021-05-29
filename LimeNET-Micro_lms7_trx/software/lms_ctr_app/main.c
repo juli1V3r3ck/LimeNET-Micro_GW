@@ -21,7 +21,7 @@
 #include "sodera_pcie_brd_v1r0.h"
 #include "spi_flash_lib.h"
 #include "i2c_opencores.h"
-#include "vctcxo_tamer.h"
+//#include "vctcxo_tamer.h"
 
 #define sbi(p,n) ((p) |= (1UL << (n)))
 #define cbi(p,n) ((p) &= ~(1 << (n)))
@@ -32,7 +32,8 @@
 //#define FW_VER				3 //Temperature and Si5351C control added
 //#define FW_VER				4 //LM75 configured to control fan; I2C speed increased up to 400kHz; ADF/DAC control implementation.
 //#define FW_VER				5 //EEPROM and FLASH R/W funtionality added
-#define FW_VER				6 // DAC value read from EEPROM memory
+//#define FW_VER				6 // DAC value read from EEPROM memory
+#define FW_VER                  7 // Removal of VCTCXO calibration because gnss module is removed
 
 #define SPI_NR_LMS7002M 0
 #define SPI_NR_FPGA     1
@@ -134,20 +135,17 @@ void Configure_LM75(void)
 	// OS polarity configuration
 	spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 0);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x01, 0);				// Pointer = configuration register
-	//spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 1);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x04, 1);				//Configuration value: OS polarity = 1, Comparator/int = 0, Shutdown = 0
 
 	// THYST configuration
 	spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 0);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x02, 0);				// Pointer = THYST register
-	//spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 1);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 35, 0);				// Set THYST H (OS output turn OFF temperature=35 C)
 	spirez = I2C_write(I2C_OPENCORES_0_BASE,  0, 1);				// Set THYST L
 
 	// TOS configuration
 	spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 0);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x03, 0);				// Pointer = TOS register
-	//spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 1);
 	spirez = I2C_write(I2C_OPENCORES_0_BASE, 45, 0);				// Set TOS H (OS output turn ON temperature=45 C)
 	spirez = I2C_write(I2C_OPENCORES_0_BASE,  0, 1);				// Set TOS L
 
@@ -182,48 +180,6 @@ void testEEPROM(void)
 	converted_val = I2C_read(I2C_OPENCORES_0_BASE, 1);
 }
 
-/*
-void testFlash(void)
-{
-	uint16_t cnt = 0, page = 0;
-	uint8_t spirez;
-
-
-	spirez = FlashSpiEraseSector(SPI_FPGA_AS_BASE, SPI_NR_FLASH, CyTrue, 0);
-
-	for(page = 0; page < 10; page++)
-	{
-		for(cnt = 0; cnt < 256; cnt++)
-		{
-			flash_page_data[cnt] = cnt+page;
-		}
-		spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, page, FLASH_PAGE_SIZE, flash_page_data, 0);
-	}
-
-	for(page = 0; page < 10; page++)
-	{
-		spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, page, FLASH_PAGE_SIZE, flash_page_data, 1);
-	}
-
-}
-*/
-
-
-void boot_from_flash(void)
-{
-	//set CONFIG_SEL overwrite to 1 and CONFIG_SEL to Image 0
-	//IOWR(DUAL_BOOT_0_BASE, 1, 0x00000001);
-
-	//set CONFIG_SEL overwrite to 1 and CONFIG_SEL to Image 1
-	IOWR(DUAL_BOOT_0_BASE, 1, 0x00000003);
-
-	/*wait while core is busy*/
-	while(IORD(DUAL_BOOT_0_BASE, 3) == 1) {}
-
-	//Trigger reconfiguration to selected Image
-	IOWR(DUAL_BOOT_0_BASE, 0, 0x00000001);
-}
-
 /**
  *	@brief Function to control DAC for TCXO frequency control
  *	@param oe output enable control: 0 - output disabled, 1 - output enabled
@@ -249,7 +205,7 @@ void Control_TCXO_DAC (unsigned char oe, uint16_t *data) //controls DAC (AD5601)
 		DAC_data[2] = ((*data) >>0) & 0xFF;
 
 	    /* Update cached value of trim DAC setting */
-	    vctcxo_trim_dac_value = (uint16_t) *data;
+	    // vctcxo_trim_dac_value = (uint16_t) *data;
 		spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 3, DAC_data, 0, NULL, 0);
 
 
@@ -291,10 +247,17 @@ void Control_TCXO_ADF (unsigned char oe, unsigned char *data) //controls ADF4002
 	}
 }
 
+void boot_from_flash(void)
+{
+	//set CONFIG_SEL overwrite to 1 and CONFIG_SEL to Image 1
+	IOWR(DUAL_BOOT_0_BASE, 1, 0x00000003);
 
-/**
- * Main, what else? :)
- **/
+	/*wait while core is busy*/
+	while(IORD(DUAL_BOOT_0_BASE, 3) == 1) {}
+
+	//Trigger reconfiguration to selected Image
+	IOWR(DUAL_BOOT_0_BASE, 0, 0x00000001);
+}
 
 uint16_t rd_dac_val(uint16_t addr)
 {
@@ -316,50 +279,46 @@ uint16_t rd_dac_val(uint16_t addr)
 	return rez;
 }
 
+/**
+ * Main, what else? :)
+ **/
 int main()
 {
     uint32_t* dest = (uint32_t*)glEp0Buffer_Tx;
-    //volatile uint32_t *uart = (volatile uint32_t*) UART_BASE;
-    //char *str = "Hello from NIOS II\r\n";
 
     volatile int spirez;
     int k;
     uint16_t eeprom_dac_val;
 
-    uint8_t vctcxo_tamer_irq = 0;
-    uint8_t vctcxo_tamer_en=0,	vctcxo_tamer_en_old = 0;
+    //uint8_t vctcxo_tamer_irq = 0;
+    //uint8_t vctcxo_tamer_en=0,	vctcxo_tamer_en_old = 0;
 
     uint8_t factory_boot_en= 0, factory_boot_en_old = 0;
 
     // Trim DAC constants
-    const uint16_t trimdac_min       = 0x1938; // Decimal value = 6456
-    const uint16_t trimdac_max       = 0xE2F3; // Decimal value = 58099
+    // const uint16_t trimdac_min       = 0x1938; // Decimal value = 6456
+    // const uint16_t trimdac_max       = 0xE2F3; // Decimal value = 58099
 
-    // Trim DAC calibration line
-    line_t trimdac_cal_line;
+    // // Trim DAC calibration line
+    // line_t trimdac_cal_line;
 
-    // VCTCXO Tune State machine
-    state_t tune_state = COARSE_TUNE_MIN;
+    // // VCTCXO Tune State machine
+    // state_t tune_state = COARSE_TUNE_MIN;
 
-    // Set the known/default values of the trim DAC cal line
-    trimdac_cal_line.point[0].x  = 0;
-    trimdac_cal_line.point[0].y  = trimdac_min;
-    trimdac_cal_line.point[1].x  = 0;
-    trimdac_cal_line.point[1].y  = trimdac_max;
-    trimdac_cal_line.slope       = 0;
-    trimdac_cal_line.y_intercept = 0;
-    struct vctcxo_tamer_pkt_buf vctcxo_tamer_pkt;
-    vctcxo_tamer_pkt.ready = false;
+    // // Set the known/default values of the trim DAC cal line
+    // trimdac_cal_line.point[0].x  = 0;
+    // trimdac_cal_line.point[0].y  = trimdac_min;
+    // trimdac_cal_line.point[1].x  = 0;
+    // trimdac_cal_line.point[1].y  = trimdac_max;
+    // trimdac_cal_line.slope       = 0;
+    // trimdac_cal_line.y_intercept = 0;
+    // struct vctcxo_tamer_pkt_buf vctcxo_tamer_pkt;
+    // vctcxo_tamer_pkt.ready = false;
 
 
     //Reset LMS7
     IOWR(LMS_CTR_GPIO_BASE, 0, 0x06);
     IOWR(LMS_CTR_GPIO_BASE, 0, 0x07);
-
-    //
-    uint8_t spi_wrbuf1[2] = {0x00, 0x20};
-    uint8_t spi_wrbuf2[6] = {0x80, 0x20, 0xFF, 0xFD, 0x00, 0x20};
-    //uint8_t spi_rdbuf[2] = {0x01, 0x00};
 
     // I2C initialiazation
     I2C_init(I2C_OPENCORES_0_BASE, ALT_CPU_FREQ, 100000);
@@ -374,104 +333,11 @@ int main()
 	}
 
     // Write initial data to the DAC
-    Control_TCXO_ADF (0, NULL);		// set ADF4002 CP to three-state
+    //Control_TCXO_ADF (0, NULL);		// set ADF4002 CP to three-state
 	Control_TCXO_DAC (1, &dac_val); // enable DAC output, set new val
-
-    //FLASH MEMORY
-    //spi_wrbuf1[0] = FLASH_CMD_READJEDECID;	//
-    //spirez = alt_avalon_spi_command(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 1, spi_wrbuf1, 3, spi_wrbuf2, 0);
-
-	//flash_page_data[FLASH_PAGE_SIZE];
-    //testFlash();
-    /*
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0000, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0001, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0002, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0003, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0004, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0005, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0006, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0007, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0008, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0009, FLASH_PAGE_SIZE, flash_page_data, 1);
-	spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x000A, FLASH_PAGE_SIZE, flash_page_data, 1);
-	//spirez = FlashSpiTransfer(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 0x0010, 10, flash_page_data, 1);
-	*/
 
     // Configure LM75
     Configure_LM75();
-
-
- /*
-    // LM75
-	spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 0);
-	spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x00, 1);				// Pointer = temperature register
-	spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 1);
-
-	converted_val = (signed short int)I2C_read(I2C_OPENCORES_0_BASE, 0);
-	//converted_val = 0xE7 << 8;	// Test -25 deg
-	converted_val = 10 * (converted_val >> 8);
-	spirez = I2C_read(I2C_OPENCORES_0_BASE, 1);
-
-	if(spirez & 0x80) converted_val = converted_val + 5;
-*/
-
-
-/*
-    while (1)	// infinite loop
-    {
-        led_pattern = IORD(SWITCH_BASE, 0);     // gets LEDs
-        set_led(led_pattern<<3);                     // sets LEDs
-
-
-        // SPI
-        //spirez = alt_avalon_spi_command(SPI_LMS_BASE, 0, 2, spi_wrbuf1, 2, spi_rdbuf, 0);
-        //spirez = alt_avalon_spi_command(SPI_LMS_BASE, 0, 6, spi_wrbuf2, 2, spi_rdbuf, 0);
-        //spirez = alt_avalon_spi_command(SPI_LMS_BASE, 0, 2, spi_wrbuf1, 2, spi_rdbuf, 0);
-
-        //FLASH MEMORY
-        //spi_wrbuf1[0] = ReverseBitOrder(0x9F);	//
-        //spirez = alt_avalon_spi_command(SPI_FPGA_AS_BASE, SPI_NR_FLASH, 1, spi_wrbuf1, 3, spi_wrbuf2, 0);
-        //spi_wrbuf2[0] = ReverseBitOrder(spi_wrbuf2[0]);
-        //spi_wrbuf2[1] = ReverseBitOrder(spi_wrbuf2[1]);
-        //spi_wrbuf2[2] = ReverseBitOrder(spi_wrbuf2[2]);
-
-
-
-		spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 0);
-		spirez = I2C_write(I2C_OPENCORES_0_BASE, 0x00, 1);				// Pointer = temperature register
-		spirez = I2C_start(I2C_OPENCORES_0_BASE, LM75_I2C_ADDR, 1);
-
-		// Read temperature and recalculate
-		converted_val = (signed short int)I2C_read(I2C_OPENCORES_0_BASE, 0);
-		converted_val = converted_val << 8;
-		converted_val = 10 * (converted_val >> 8);
-		spirez = I2C_read(I2C_OPENCORES_0_BASE, 1);
-		if(spirez & 0x80) converted_val = converted_val + 5;
-
-
-		//Read from LMS7
-		spi_wrbuf1[0] = 0x00;
-		spi_wrbuf1[1] = 0x21;
-		spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, spi_wrbuf1, 2, spi_wrbuf2, 0);
-
-		// Write to the DAC
-		//dac_val = 10;
-		//dac_data[0] = (dac_val) >>2; //POWER-DOWN MODE = NORMAL OPERATION (MSB bits =00) + MSB data
-		//dac_data[1] = (dac_val) <<6; //LSB data
-		//spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 2, dac_data, 0, NULL, 0);
-
-		//dac_val = 200;
-		//dac_data[0] = (dac_val) >>2; //POWER-DOWN MODE = NORMAL OPERATION (MSB bits =00) + MSB data
-		//dac_data[1] = (dac_val) <<6; //LSB data
-		//spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 2, dac_data, 0, NULL, 0);
-
-		//EEPROM Test, RD from 0x0000
-		testEEPROM();
-
-    }
-*/
-
 
     while (1)	// infinite loop
     {
@@ -485,179 +351,150 @@ int main()
     		}
     	}
 
-    	vctcxo_tamer_irq = (IORD_8DIRECT(VCTCXO_TAMER_0_CTRL_BASE, 0x00) & 0x02);
-	    // Clear VCTCXO tamer interrupt
-	    if(vctcxo_tamer_irq != 0)
-	    {	vctcxo_tamer_isr(&vctcxo_tamer_pkt);
-	    	//IOWR_8DIRECT(VCTCXO_TAMER_0_BASE, 0, 0x70);
-	    }
+    	// vctcxo_tamer_irq = (IORD_8DIRECT(VCTCXO_TAMER_0_CTRL_BASE, 0x00) & 0x02);
+	    // // Clear VCTCXO tamer interrupt
+	    // if(vctcxo_tamer_irq != 0)
+	    // {
+	    // 	vctcxo_tamer_isr(&vctcxo_tamer_pkt);
+	    // }
 
-    	//Get vctcxo tamer enable bit status
-    	vctcxo_tamer_en_old = vctcxo_tamer_en;
-    	vctcxo_tamer_en = (IORD_8DIRECT(VCTCXO_TAMER_0_CTRL_BASE, 0x00) & 0x01);
+    	// //Get vctcxo tamer enable bit status
+    	// vctcxo_tamer_en_old = vctcxo_tamer_en;
+    	// vctcxo_tamer_en = (IORD_8DIRECT(VCTCXO_TAMER_0_CTRL_BASE, 0x00) & 0x01);
 
-    	if (vctcxo_tamer_en_old != vctcxo_tamer_en){
-    		if (vctcxo_tamer_en == 0x01){
-    			vctcxo_tamer_init();
-    			vctcxo_tamer_pkt.ready = true;
-    		}
-    		else {
-    			vctcxo_tamer_dis();
-    			tune_state = COARSE_TUNE_MIN;
-    			vctcxo_tamer_pkt.ready = false;
-    		}
-    	}
-
-
-        /* Temporarily putting the VCTCXO Calibration stuff here. */
-        if( vctcxo_tamer_pkt.ready ) {
-
-            vctcxo_tamer_pkt.ready = false;
-
-            switch(tune_state) {
-
-            case COARSE_TUNE_MIN:
-
-                /* Tune to the minimum DAC value */
-                vctcxo_trim_dac_write( 0x08, trimdac_min );
-                dac_val = (uint16_t) trimdac_min;
-            	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
-
-                /* State to enter upon the next interrupt */
-                tune_state = COARSE_TUNE_MAX;
-                //printf("COARSE_TUNE_MIN: \r\n\t");
-                //printf("DAC value: ");
-                //printf("%u;\t", (unsigned int)dac_val);
+    	// if (vctcxo_tamer_en_old != vctcxo_tamer_en){
+    	// 	if (vctcxo_tamer_en == 0x01){
+    	// 		vctcxo_tamer_init();
+    	// 		vctcxo_tamer_pkt.ready = true;
+    	// 	}
+    	// 	else {
+    	// 		vctcxo_tamer_dis();
+    	// 		tune_state = COARSE_TUNE_MIN;
+    	// 		vctcxo_tamer_pkt.ready = false;
+    	// 	}
+    	// }
 
 
-                break;
+        // /* Temporarily putting the VCTCXO Calibration stuff here. */
+        // if( vctcxo_tamer_pkt.ready ) {
 
-            case COARSE_TUNE_MAX:
+        //     vctcxo_tamer_pkt.ready = false;
 
-                /* We have the error from the minimum DAC setting, store it
-                 * as the 'x' coordinate for the first point */
-                trimdac_cal_line.point[0].x = vctcxo_tamer_pkt.pps_1s_error;
+        //     switch(tune_state) {
 
-                //printf("1s_error: ");
-                //printf("%i;\r\n", (int)vctcxo_tamer_pkt.pps_1s_error);
+        //     case COARSE_TUNE_MIN:
 
-                /* Tune to the maximum DAC value */
-                vctcxo_trim_dac_write( 0x08, trimdac_max );
-                dac_val = (uint16_t) trimdac_max;
-            	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
+        //         /* Tune to the minimum DAC value */
+        //         vctcxo_trim_dac_write( 0x08, trimdac_min );
+        //         dac_val = (uint16_t) trimdac_min;
+        //     	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
 
-                /* State to enter upon the next interrupt */
-                tune_state = COARSE_TUNE_DONE;
-                //printf("COARSE_TUNE_MAX: \r\n\t");
-                //printf("DAC value: ");
-                //printf("%u;\t", (unsigned int)dac_val);
+        //         /* State to enter upon the next interrupt */
+        //         tune_state = COARSE_TUNE_MAX;
 
-                break;
+        //         break;
 
-            case COARSE_TUNE_DONE:
-            	/* Write status to to state register*/
-            	vctcxo_tamer_write(VT_STATE_ADDR, 0x01);
+        //     case COARSE_TUNE_MAX:
 
-                /* We have the error from the maximum DAC setting, store it
-                 * as the 'x' coordinate for the second point */
-                trimdac_cal_line.point[1].x = vctcxo_tamer_pkt.pps_1s_error;
+        //         /* We have the error from the minimum DAC setting, store it
+        //          * as the 'x' coordinate for the first point */
+        //         trimdac_cal_line.point[0].x = vctcxo_tamer_pkt.pps_1s_error;
 
-                //printf("1s_error: ");
-                //printf("%i;\r\n", (int)vctcxo_tamer_pkt.pps_1s_error);
+        //         /* Tune to the maximum DAC value */
+        //         vctcxo_trim_dac_write( 0x08, trimdac_max );
+        //         dac_val = (uint16_t) trimdac_max;
+        //     	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
 
-                /* We now have two points, so we can calculate the equation
-                 * for a line plotted with DAC counts on the Y axis and
-                 * error on the X axis. We want a PPM of zero, which ideally
-                 * corresponds to the y-intercept of the line. */
+        //         /* State to enter upon the next interrupt */
+        //         tune_state = COARSE_TUNE_DONE;
+
+        //         break;
+
+        //     case COARSE_TUNE_DONE:
+        //     	/* Write status to to state register*/
+        //     	vctcxo_tamer_write(VT_STATE_ADDR, 0x01);
+
+        //         /* We have the error from the maximum DAC setting, store it
+        //          * as the 'x' coordinate for the second point */
+        //         trimdac_cal_line.point[1].x = vctcxo_tamer_pkt.pps_1s_error;
+
+        //         /* We now have two points, so we can calculate the equation
+        //          * for a line plotted with DAC counts on the Y axis and
+        //          * error on the X axis. We want a PPM of zero, which ideally
+        //          * corresponds to the y-intercept of the line. */
 
 
-                trimdac_cal_line.slope = ( (float) (trimdac_cal_line.point[1].y - trimdac_cal_line.point[0].y) / (float)
-                                           (trimdac_cal_line.point[1].x - trimdac_cal_line.point[0].x) );
+        //         trimdac_cal_line.slope = ( (float) (trimdac_cal_line.point[1].y - trimdac_cal_line.point[0].y) / (float)
+        //                                    (trimdac_cal_line.point[1].x - trimdac_cal_line.point[0].x) );
 
-                trimdac_cal_line.y_intercept = ( trimdac_cal_line.point[0].y -
-                                                 (uint16_t)(lroundf(trimdac_cal_line.slope * (float) trimdac_cal_line.point[0].x)));
+        //         trimdac_cal_line.y_intercept = ( trimdac_cal_line.point[0].y -
+        //                                          (uint16_t)(lroundf(trimdac_cal_line.slope * (float) trimdac_cal_line.point[0].x)));
 
-                /* Set the trim DAC count to the y-intercept */
-                vctcxo_trim_dac_write( 0x08, trimdac_cal_line.y_intercept );
-                dac_val = (uint16_t) trimdac_cal_line.y_intercept;
-            	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
+        //         /* Set the trim DAC count to the y-intercept */
+        //         vctcxo_trim_dac_write( 0x08, trimdac_cal_line.y_intercept );
+        //         dac_val = (uint16_t) trimdac_cal_line.y_intercept;
+        //     	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
 
-                /* State to enter upon the next interrupt */
-                tune_state = FINE_TUNE;
-                //printf("COARSE_TUNE_DONE: \r\n\t");
-                //printf("DAC value: ");
-                //printf("%u;\r\n\r\n", (unsigned int)dac_val);
-                //printf("FINE_TUNE: \r\n");
-                //printf("Err_Flag;DAC value;Error;\r\n");
+        //         /* State to enter upon the next interrupt */
+        //         tune_state = FINE_TUNE;
 
-                break;
+        //         break;
 
-            case FINE_TUNE:
+        //     case FINE_TUNE:
 
-                /* We should be extremely close to a perfectly tuned
-                 * VCTCXO, but some minor adjustments need to be made */
+        //         /* We should be extremely close to a perfectly tuned
+        //          * VCTCXO, but some minor adjustments need to be made */
 
-                /* Check the magnitude of the errors starting with the
-                 * one second count. If an error is greater than the maximum
-                 * tolerated error, adjust the trim DAC by the error (Hz)
-                 * multiplied by the slope (in counts/Hz) and scale the
-                 * result by the precision interval (e.g. 1s, 10s, 100s). */
+        //         /* Check the magnitude of the errors starting with the
+        //          * one second count. If an error is greater than the maximum
+        //          * tolerated error, adjust the trim DAC by the error (Hz)
+        //          * multiplied by the slope (in counts/Hz) and scale the
+        //          * result by the precision interval (e.g. 1s, 10s, 100s). */
 
-                if( vctcxo_tamer_pkt.pps_1s_error_flag ) {
-                	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
-                	                    		(uint16_t) (lroundf((float)vctcxo_tamer_pkt.pps_1s_error * trimdac_cal_line.slope)/1));
-                	// Write tuned val to VCTCXO_tamer MM registers
-                    vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
-                    // Change DAC value
-                    dac_val = (uint16_t) vctcxo_trim_dac_value;
-                	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
-                	//printf("001;");
-                	//printf("%u;", (unsigned int)dac_val);
-                	//printf("%i;\r\n", (int) vctcxo_tamer_pkt.pps_1s_error);
+        //         if( vctcxo_tamer_pkt.pps_1s_error_flag ) {
+        //         	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
+        //         	                    		(uint16_t) (lroundf((float)vctcxo_tamer_pkt.pps_1s_error * trimdac_cal_line.slope)/1));
+        //         	// Write tuned val to VCTCXO_tamer MM registers
+        //             vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
+        //             // Change DAC value
+        //             dac_val = (uint16_t) vctcxo_trim_dac_value;
+        //         	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
 
-                } else if( vctcxo_tamer_pkt.pps_10s_error_flag ) {
-                	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
-                    							(uint16_t)(lroundf((float)vctcxo_tamer_pkt.pps_10s_error * trimdac_cal_line.slope)/10));
-                	// Write tuned val to VCTCXO_tamer MM registers
-                    vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
-                    // Change DAC value
-                    dac_val = (uint16_t) vctcxo_trim_dac_value;
-                	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
-                	//printf("010;");
-                	//printf("%u;", (unsigned int)dac_val);
-                	//printf("%i;\r\n", (int) vctcxo_tamer_pkt.pps_10s_error);
+        //         } else if( vctcxo_tamer_pkt.pps_10s_error_flag ) {
+        //         	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
+        //             							(uint16_t)(lroundf((float)vctcxo_tamer_pkt.pps_10s_error * trimdac_cal_line.slope)/10));
+        //         	// Write tuned val to VCTCXO_tamer MM registers
+        //             vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
+        //             // Change DAC value
+        //             dac_val = (uint16_t) vctcxo_trim_dac_value;
+        //         	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
 
-                } else if( vctcxo_tamer_pkt.pps_100s_error_flag ) {
-                	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
-                    							(uint16_t)(lroundf((float)vctcxo_tamer_pkt.pps_100s_error * trimdac_cal_line.slope)/100));
-                	// Write tuned val to VCTCXO_tamer MM registers
-                    vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
-                    // Change DAC value
-                    dac_val = (uint16_t) vctcxo_trim_dac_value;
-                	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
-                	//printf("100;");
-                	//printf("%u;", (unsigned int)dac_val);
-                	//printf("%i;\r\n", (int) vctcxo_tamer_pkt.pps_100s_error);
-                }
+        //         } else if( vctcxo_tamer_pkt.pps_100s_error_flag ) {
+        //         	vctcxo_trim_dac_value = (vctcxo_trim_dac_value -
+        //             							(uint16_t)(lroundf((float)vctcxo_tamer_pkt.pps_100s_error * trimdac_cal_line.slope)/100));
+        //         	// Write tuned val to VCTCXO_tamer MM registers
+        //             vctcxo_trim_dac_write( 0x08, vctcxo_trim_dac_value);
+        //             // Change DAC value
+        //             dac_val = (uint16_t) vctcxo_trim_dac_value;
+        //         	Control_TCXO_DAC (1, &dac_val); //enable DAC output, set new val
+        //         }
 
-                break;
+        //         break;
 
-            default:
-                break;
+        //     default:
+        //         break;
 
-            } /* switch */
+        //     } /* switch */
 
-            /* Take PPS counters out of reset */
-            vctcxo_tamer_reset_counters( false );
+        //     /* Take PPS counters out of reset */
+        //     vctcxo_tamer_reset_counters( false );
 
-            /* Enable interrupts */
-            vctcxo_tamer_enable_isr( true );
+        //     /* Enable interrupts */
+        //     vctcxo_tamer_enable_isr( true );
 
-        } /* VCTCXO Tamer interrupt */
+        // } /* VCTCXO Tamer interrupt */
 
         // FIFO
-        //IOWR(AV_FIFO_INT_0_BASE, 0, cnt);		// Write Data to FIFO
-        //cnt++;
         spirez = IORD(AV_FIFO_INT_0_BASE, 2);	// Read FIFO Status
         if(!(spirez & 0x01))
         {
@@ -934,9 +771,7 @@ int main()
 							flash_page |= LMS_Ctrl_Packet_Rx->Data_field[7] << 16;
 							flash_page |= LMS_Ctrl_Packet_Rx->Data_field[8] << 8;
 							flash_page |= LMS_Ctrl_Packet_Rx->Data_field[9];
-							//flash_page = flash_page / FLASH_PAGE_SIZE;
 
-							//if( FlashSpiTransfer(FLASH_SPI_BASE, SPI_NR_FLASH, flash_page, FLASH_PAGE_SIZE, flash_page_data, CyTrue) != CY_U3P_SUCCESS)  cmd_errors++;//write to flash
 							if( FlashSpiRead(FLASH_SPI_BASE, SPI_NR_FLASH, flash_page, FLASH_PAGE_SIZE, flash_page_data) != CY_U3P_SUCCESS)  cmd_errors++;//write to flash
 
 							for(k=0; k<data_cnt; k++)
@@ -960,9 +795,6 @@ int main()
 
 					for(block = 0; block < LMS_Ctrl_Packet_Rx->Header.Data_blocks; block++)
 					{
-
-						//signed short int converted_val = 300;
-
 						switch (LMS_Ctrl_Packet_Rx->Data_field[0 + (block)])//ch
 						{
 							case 0://dac val
@@ -1017,18 +849,11 @@ int main()
 							case 0:
 								if (LMS_Ctrl_Packet_Rx->Data_field[1 + (block * 4)] == 0) //RAW units?
 								{
-									//if(LMS_Ctrl_Packet_Rx->Data_field[2 + (block * 4)] == 0) //MSB byte empty?
-									//{
-										Control_TCXO_ADF(0, NULL); //set ADF4002 CP to three-state
+									Control_TCXO_ADF(0, NULL); //set ADF4002 CP to three-state
 
-										dac_val = (LMS_Ctrl_Packet_Rx->Data_field[2 + (block * 4)] << 8 ) + LMS_Ctrl_Packet_Rx->Data_field[3 + (block * 4)];
+									dac_val = (LMS_Ctrl_Packet_Rx->Data_field[2 + (block * 4)] << 8 ) + LMS_Ctrl_Packet_Rx->Data_field[3 + (block * 4)];
 
-										Control_TCXO_DAC (1, &dac_val);
-
-										//if( CyU3PI2cTransmitBytes (&preamble, &sc_brdg_data[0], 2, 0) != CY_U3P_SUCCESS)  cmd_errors++;
-										//spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 2, dac_data, 0, NULL, 0);
-									//}
-									//else cmd_errors++;
+									Control_TCXO_DAC (1, &dac_val);
 								}
 								else cmd_errors++;
 
@@ -1046,12 +871,6 @@ int main()
 
 				break;
 
-
-
-
-
-
-
 				case CMD_ALTERA_FPGA_GW_WR: //FPGA passive serial
 
 					current_portion = (LMS_Ctrl_Packet_Rx->Data_field[1] << 24) | (LMS_Ctrl_Packet_Rx->Data_field[2] << 16) | (LMS_Ctrl_Packet_Rx->Data_field[3] << 8) | (LMS_Ctrl_Packet_Rx->Data_field[4]);
@@ -1068,10 +887,6 @@ int main()
 						*/
 
 						case 0://Bitstream to FPGA from PC
-							/*
-							if ( Configure_FPGA (&LMS_Ctrl_Packet_Rx->Data_field[24], current_portion, data_cnt) ) LMS_Ctrl_Packet_Tx->Header.Status = STATUS_COMPLETED_CMD;
-							else LMS_Ctrl_Packet_Tx->Header.Status = STATUS_ERROR_CMD;
-							*/
 							LMS_Ctrl_Packet_Tx->Header.Status = STATUS_ERROR_CMD;
 
 						break;
@@ -1112,20 +927,16 @@ int main()
 										if((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x13) == 0x10)
 										{
 											IOWR(ONCHIP_FLASH_0_CSR_BASE, 1, 0xf7ffffff);
-											//printf("CFM0 Erased\n");
-											//printf("Enter Programming file.\n");
 											state = 20;
 											Flash = 1;
 										}
 										if((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x13) == 0x01)
 										{
-											//printf("Erasing CFM0\n");
 											state = 11;
 											Flash = 1;
 										}
 										if((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x13) == 0x00)
 										{
-											//printf("Erase CFM0 Failed\n");
 											state = 0;
 										}
 
@@ -1136,24 +947,12 @@ int main()
 										for(byte = 24; byte <= 52; byte += 4)
 										{
 											//Take word
-											//word = (LMS_Ctrl_Packet_Rx->Data_field[byte+0]<<24)|(LMS_Ctrl_Packet_Rx->Data_field[byte+1]<<16)|(LMS_Ctrl_Packet_Rx->Data_field[byte+2]<<8)|(LMS_Ctrl_Packet_Rx->Data_field[byte+3]);
 											word  = (ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(LMS_Ctrl_Packet_Rx->Data_field[byte+0]) >>  0) & 0xFF000000;
 											word |= (ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(LMS_Ctrl_Packet_Rx->Data_field[byte+1]) >>  8) & 0x00FF0000;
 											word |= (ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(LMS_Ctrl_Packet_Rx->Data_field[byte+2]) >> 16) & 0x0000FF00;
 											word |= (ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(LMS_Ctrl_Packet_Rx->Data_field[byte+3]) >> 24) & 0x000000FF;
 
-
-								  		  	//for(byte1=byte; byte1<byte+4; byte1++)
-								  		  	//{
-								  		  	//	LMS_Ctrl_Packet_Rx->Data_field[byte1] = (((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0xaa)>>1)|((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0x55)<<1));		/*Swap LSB with MSB before write into CFM*/
-								  		  	//	LMS_Ctrl_Packet_Rx->Data_field[byte1] = (((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0xcc)>>2)|((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0x33)<<2));
-								  		  	// 	LMS_Ctrl_Packet_Rx->Data_field[byte1] = (((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0xf0)>>4)|((LMS_Ctrl_Packet_Rx->Data_field[byte1] & 0x0f)<<4));
-								  		  	//}
-
-											//Swap bits using hardware accelerator
-											//word = ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(word);
-
-											//Command to write into On-Chip Flash IP
+								  		  	//Command to write into On-Chip Flash IP
 											if(address <= CFM0EndAddress)
 											{
 												IOWR_32DIRECT(ONCHIP_FLASH_0_DATA_BASE, address, word);
@@ -1161,13 +960,9 @@ int main()
 												address += 4;
 
 
-												while((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x0b) == 0x02)
-												{
-													//printf("Writing CFM0(%d)\n", address);
-												}
+												while((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x0b) == 0x02) {};
 												if((IORD(ONCHIP_FLASH_0_CSR_BASE, 0) & 0x0b) == 0x00)
 												{
-													//printf("Write to %d failed\n", address);
 													state = 0;
 													address = 700000;
 												}
@@ -1241,23 +1036,18 @@ int main()
 						}
 					}
 
-					//**ZT Modify_BRDSPI16_Reg_bits (FPGA_SPI_REG_LMS1_LMS2_CTRL, LMS1_SS, LMS1_SS, 0); //Enable LMS's SPI
-
 					if (current_portion == 0) //PORTION_NR = first fifo
 					{
 						//reset mcu
-						//write reg addr - mSPI_REG2 (Controls MCU input pins)
 						sc_brdg_data[0] = (0x80); //reg addr MSB with write bit
 						sc_brdg_data[1] = (MCU_CONTROL_REG); //reg addr LSB
 
 						sc_brdg_data[2] = (0x00); //reg data MSB
 						sc_brdg_data[3] = (0x00); //reg data LSB //8
 
-						//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 4);
 						spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 4, &sc_brdg_data[0], 0, NULL, 0);
 
 						//set mode
-						//write reg addr - mSPI_REG2 (Controls MCU input pins)
 						sc_brdg_data[0] = (0x80); //reg addr MSB with write bit
 						sc_brdg_data[1] = (MCU_CONTROL_REG); //reg addr LSB
 
@@ -1268,34 +1058,24 @@ int main()
 						{
 							case PROG_EEPROM:
 								sc_brdg_data[3] = (0x01); //Programming both EEPROM and SRAM  //8
-								//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 4);
 								spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 4, &sc_brdg_data[0], 0, NULL, 0);
 								break;
 
 							case PROG_SRAM:
 								sc_brdg_data[3] =(0x02); //Programming only SRAM  //8
-								//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 4);
 								spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 4, &sc_brdg_data[0], 0, NULL, 0);
 								break;
 
 
 							case BOOT_MCU:
 								sc_brdg_data[3] = (0x03); //Programming both EEPROM and SRAM  //8
-								//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 4);
 								spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 4, &sc_brdg_data[0], 0, NULL, 0);
-
-								/*sbi (PORTB, SAEN); //Disable LMS's SPI
-								cbi (PORTB, SAEN); //Enable LMS's SPI*/
-
 								//spi read
 								//write reg addr
 								sc_brdg_data[0] = (0x00); //reg addr MSB
 								sc_brdg_data[1] = (MCU_STATUS_REG); //reg addr LSB
-								//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 2);
-								//spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 0, NULL, 0);
 
 								//read reg data
-								//**ZT CyU3PSpiReceiveWords (&sc_brdg_data[0], 2); //reg data
 								spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 2, &sc_brdg_data[0], 0);
 
 								goto BOOTING;
@@ -1315,11 +1095,8 @@ int main()
 						//write reg addr
 						sc_brdg_data[0] = (0x00); //reg addr MSB
 						sc_brdg_data[1] = (MCU_STATUS_REG); //reg addr LSB
-						//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 2);
-						//spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 0, NULL, 0);
 
 						//read reg data
-						//**ZT CyU3PSpiReceiveWords (&sc_brdg_data[0], 2); //reg data
 						spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 2, &sc_brdg_data[0], 0);
 
 						if (sc_brdg_data[1] &0x01) break; //EMPTY_WRITE_BUFF = 1
@@ -1331,27 +1108,6 @@ int main()
 					//write 32 bytes to FIFO
 					for(block = 0; block < 32; block++)
 					{
-						/*
-						//wait till EMPTY_WRITE_BUFF = 1
-						while (MCU_retries < MAX_MCU_RETRIES)
-						{
-							//read status reg
-
-							//spi read
-							//write reg addr
-							SPI_SendByte(0x00); //reg addr MSB
-							SPI_SendByte(MCU_STATUS_REG); //reg addr LSB
-
-							//read reg data
-							SPI_TransferByte(0x00); //reg data MSB
-							temp_status = SPI_TransferByte(0x00); //reg data LSB
-
-							if (temp_status &0x01) break;
-
-							MCU_retries++;
-							Delay_us (30);
-						}*/
-
 						//write reg addr - mSPI_REG4 (Writes one byte of data to MCU  )
 						sc_brdg_data[0] = (0x80); //reg addr MSB with write bit
 						sc_brdg_data[1] = (MCU_FIFO_WR_REG); //reg addr LSB
@@ -1359,15 +1115,10 @@ int main()
 						sc_brdg_data[2] = (0x00); //reg data MSB
 						sc_brdg_data[3] = (LMS_Ctrl_Packet_Rx->Data_field[2 + block]); //reg data LSB //8
 
-						//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 4);
 						spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 4, &sc_brdg_data[0], 0, NULL, 0);
 
 						MCU_retries = 0;
 					}
-
-					/*sbi (PORTB, SAEN); //Enable LMS's SPI
-					cbi (PORTB, SAEN); //Enable LMS's SPI*/
-
 
 					MCU_retries = 0;
 
@@ -1380,11 +1131,8 @@ int main()
 						//write reg addr
 						sc_brdg_data[0] = (0x00); //reg addr MSB
 						sc_brdg_data[1] = (MCU_STATUS_REG); //reg addr LSB
-						//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 2);
-						//spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 0, NULL, 0);
 
 						//read reg data
-						//**ZT CyU3PSpiReceiveWords (&sc_brdg_data[0], 2); //reg data
 						spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 2, &sc_brdg_data[0], 0);
 
 						if (sc_brdg_data[1] &0x01) break; //EMPTY_WRITE_BUFF = 1
@@ -1409,11 +1157,8 @@ int main()
 							//write reg addr
 							sc_brdg_data[0] = (0x00); //reg addr MSB
 							sc_brdg_data[1] = (MCU_STATUS_REG); //reg addr LSB
-							//**ZT CyU3PSpiTransmitWords (&sc_brdg_data[0], 2);
-							//spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 0, NULL, 0);
 
 							//read reg data
-							//**ZT CyU3PSpiReceiveWords (&sc_brdg_data[0], 2); //reg data
 							spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_LMS7002M, 2, &sc_brdg_data[0], 2, &sc_brdg_data[0], 0);
 
 							if (sc_brdg_data[1] &0x40) break; //PROGRAMMED = 1
@@ -1432,19 +1177,13 @@ int main()
 					if(cmd_errors) LMS_Ctrl_Packet_Tx->Header.Status = STATUS_ERROR_CMD;
 					else LMS_Ctrl_Packet_Tx->Header.Status = STATUS_COMPLETED_CMD;
 
-					//**ZT Modify_BRDSPI16_Reg_bits (FPGA_SPI_REG_LMS1_LMS2_CTRL, LMS1_SS, LMS1_SS, 1); //Disable LMS's SPI
-
 				break;
 
  				default:
  					/* This is unknown request. */
- 					//isHandled = CyFalse;
 					LMS_Ctrl_Packet_Tx->Header.Status = STATUS_UNKNOWN_CMD;
  				break;
      		}
-
-     		///////////for testing
-     		//LMS_Ctrl_Packet_Tx->Header.Status = STATUS_INVALID_PERIPH_ID_CMD;
 
      		//Send response to the command
         	for(int i=0; i<64/sizeof(uint32_t); ++i)
@@ -1453,34 +1192,11 @@ int main()
         	};
 
         	// If boot from flash CMD is executed FPGA GW is loaded from internal FLASH (image 1)
-        	if (boot_img_en==1) {
-
+        	if (boot_img_en==1)
+        	{
         		boot_from_flash();
-
         	};
-
-
         };
-
-        //IOWR(AV_FIFO_INT_0_BASE, 0, cnt);		// Write Data to FIFO
-
-
-        //IOWR(AV_FIFO_INT_0_BASE, 3, 1);		// Toggle FIFO reset
-        //IOWR(AV_FIFO_INT_0_BASE, 3, 0);		// Toggle FIFO reset
-
-
-
-/*
-        // UART
-        char *ptr = str;
-        while (*ptr != '\0')
-        {
-           while ((uart[2] & (1<<6)) == 0);
-           uart[1] = *ptr;
-           ptr++;
-        }
-*/
-
     }
 
     return 0;	//Just make compiler happy!

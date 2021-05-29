@@ -99,12 +99,6 @@ begin
       senA           => sen,
       sdoutA         => inst1_sdoutA,    
       oenA           => open,     
-      -- Serial port B IOs
-      sdinB          => '0',
-      sclkB          => '0',
-      senB           => '1',
-      sdoutB         => open,    
-      oenB           => open,       
       -- Signals coming from the pins or top level serial interface
       lreset         => lreset, -- Logic reset signal, resets logic cells only  (use only one reset)
       mreset         => mreset,-- Memory reset signal, resets configuration memory only (use only one reset)      

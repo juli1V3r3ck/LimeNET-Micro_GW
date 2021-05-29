@@ -21,10 +21,10 @@ package fpgacfg_pkg is
    -- Outputs from the fpgacfg.
    type t_FROM_FPGACFG is record
       --FPGA direct clocking
-      phase_reg_sel  : std_logic_vector(15 downto 0);
-      clk_ind        : std_logic_vector(4 downto 0);
-      cnt_ind        : std_logic_vector(4 downto 0);
-      load_phase_reg : std_logic;
+      -- phase_reg_sel  : std_logic_vector(15 downto 0);
+      -- clk_ind        : std_logic_vector(4 downto 0);
+      -- cnt_ind        : std_logic_vector(4 downto 0);
+      -- load_phase_reg : std_logic;
       drct_clk_en    : std_logic_vector(15 downto 0);
       --Interface Config
       ch_en          : std_logic_vector(15 downto 0);
@@ -33,20 +33,20 @@ package fpgacfg_pkg is
       ddr_en         : std_logic;
       trxiq_pulse    : std_logic;
       mimo_int_en    : std_logic;
-      synch_dis      : std_logic;
-      synch_mode     : std_logic;
+      -- synch_dis      : std_logic;
+      -- synch_mode     : std_logic;
       smpl_nr_clr    : std_logic;
       txpct_loss_clr : std_logic;
       rx_en          : std_logic;
-      tx_en          : std_logic;
+      -- tx_en          : std_logic;
       rx_ptrn_en     : std_logic;
-      tx_ptrn_en     : std_logic;
-      tx_cnt_en      : std_logic;
-      wfm_ch_en      : std_logic_vector(15 downto 0);
-      wfm_play       : std_logic;
-      wfm_load       : std_logic;
-      wfm_smpl_width : std_logic_vector(1 downto 0);
-      SPI_SS         : std_logic_vector(15 downto 0);
+      -- tx_ptrn_en     : std_logic;
+      -- tx_cnt_en      : std_logic;
+      -- wfm_ch_en      : std_logic_vector(15 downto 0);
+      -- wfm_play       : std_logic;
+      -- wfm_load       : std_logic;
+      -- wfm_smpl_width : std_logic_vector(1 downto 0);
+      -- SPI_SS         : std_logic_vector(15 downto 0);
       
       LMS1_SS        : std_logic;
       -- LMS2_SS     : std_logic;
@@ -73,10 +73,10 @@ package fpgacfg_pkg is
       FPGA_LED4_CTRL    : std_logic_vector(2 downto 0);
       FPGA_LED5_CTRL    : std_logic_vector(2 downto 0);
       CLK_ENA           : std_logic_vector(3 downto 0);
-      sync_pulse_period : std_logic_vector(31 downto 0);
-      sync_size         : std_logic_vector(15 downto 0);
-      txant_pre         : std_logic_vector(15 downto 0);
-      txant_post        : std_logic_vector(15 downto 0);
+      -- sync_pulse_period : std_logic_vector(31 downto 0);
+      -- sync_size         : std_logic_vector(15 downto 0);
+      -- txant_pre         : std_logic_vector(15 downto 0);
+      -- txant_post        : std_logic_vector(15 downto 0);
    end record t_FROM_FPGACFG;
   
    -- Inputs to the fpgacfg.

@@ -30,14 +30,6 @@ entity pllcfg is
       
       oenA           : out std_logic; -- NC
       
-      -- Serial port B IOs
-      sdinB          : in std_logic; -- Data in
-      sclkB          : in std_logic; -- Data clock
-      senB           : in std_logic;-- Enable signal (active low)
-      sdoutB         : out std_logic; -- Data out
-      
-      oenB           : out std_logic; -- NC
-      
       -- Signals coming from the pins or top level serial interface
       lreset         : in std_logic; -- Logic reset signal, resets logic cells only  (use only one reset)
       mreset         : in std_logic; -- Memory reset signal, resets configuration memory only (use only one reset)
@@ -62,21 +54,11 @@ signal din_regA_en   : std_logic;
 signal dout_regA     : std_logic_vector(15 downto 0);-- Data out register
 signal dout_regA_sen, dout_regA_len: std_logic;
 
-signal inst_regB     : std_logic_vector(15 downto 0);-- Instruction register
-signal inst_regB_en  : std_logic;
-
-signal din_regB      : std_logic_vector(15 downto 0);-- Data in register
-signal din_regB_en   : std_logic;
-
-signal dout_regB     : std_logic_vector(15 downto 0);-- Data out register
-signal dout_regB_sen, dout_regB_len: std_logic;
-
 
 signal mem: marray32x16;-- Config memory
 signal mem_weA: std_logic;
-signal mem_weB: std_logic;
 
-signal oeA, oeB: std_logic;-- Tri state buffers control
+signal oeA: std_logic;-- Tri state buffers control
 
 
 -- Components
@@ -104,23 +86,6 @@ fsmA: mcfg32wm_fsm
       stateo         => open
       );
 
-fsmB: mcfg32wm_fsm 
-   port map( 
-      address        => maddress, 
-      mimo_en        => mimo_en, 
-      inst_reg       => inst_regB, 
-      sclk           => sclkB, 
-      sen            => senB, 
-      reset          => lreset,
-      inst_reg_en    => inst_regB_en, 
-      din_reg_en     => din_regB_en, 
-      dout_reg_sen   => dout_regB_sen,
-      dout_reg_len   => dout_regB_len, 
-      mem_we         => mem_weB, 
-      oe             => oeB, 
-      stateo         => open
-   );
-
 -- ---------------------------------------------------------------------------------------------
 -- Instruction registers
 -- ---------------------------------------------------------------------------------------------
@@ -138,21 +103,6 @@ begin
       end if;
    end if;
 end process inst_reg_procA;
-
-inst_reg_procB: process(sclkB, lreset)
-   variable i: integer;
-begin
-   if lreset = '0' then
-      inst_regB <= (others => '0');
-   elsif sclkB'event and sclkB = '1' then
-      if inst_regB_en = '1' then
-         for i in 15 downto 1 loop
-            inst_regB(i) <= inst_regB(i-1);
-         end loop;
-         inst_regB(0) <= sdinB;
-      end if;
-   end if;
-end process inst_reg_procB;
 
 
 -- ---------------------------------------------------------------------------------------------
@@ -172,21 +122,6 @@ begin
       end if;
    end if;
 end process din_reg_procA;
-
-din_reg_procB: process(sclkB, lreset)
-   variable i: integer;
-begin
-   if lreset = '0' then
-      din_regB <= (others => '0');
-   elsif sclkB'event and sclkB = '1' then
-      if din_regB_en = '1' then
-         for i in 15 downto 1 loop
-            din_regB(i) <= din_regB(i-1);
-         end loop;
-         din_regB(0) <= sdinB;
-      end if;
-   end if;
-end process din_reg_procB;
 
 -- ---------------------------------------------------------------------------------------------
 -- Data output registers
@@ -210,37 +145,8 @@ begin
    end if;
 end process dout_reg_procA;
 
--- Tri state buffer to connect multiple serial interfaces in parallel
---sdout <= dout_reg(7) when oe = '1' else 'Z';
-
---sdout <= dout_reg(7);
---oen <= oe;
-
 sdoutA   <= dout_regA(15) and oeA;
 oenA     <= oeA;
-
-
-dout_reg_procB: process(sclkB, lreset)
-   variable i: integer;
-begin
-   if lreset = '0' then
-      dout_regB <= (others => '0');
-   elsif sclkB'event and sclkB = '0' then
-      -- Shift operation
-      if dout_regB_sen = '1' then
-         for i in 15 downto 1 loop
-            dout_regB(i) <= dout_regB(i-1);
-         end loop;
-         dout_regB(0) <= dout_regB(15);
-      -- Load operation
-      elsif dout_regB_len = '1' then
-         dout_regB <= mem(to_integer(unsigned(inst_regB(4 downto 0))));
-      end if;      
-   end if;
-end process dout_reg_procB;
-
-sdoutB   <= dout_regB(15) and oeB;
-oenB     <= oeB;
 
 -- ---------------------------------------------------------------------------------------------
 -- Configuration memory

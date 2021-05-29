@@ -1,14 +1,5 @@
 
 module lms_ctr (
-	avm_m0_address,
-	avm_m0_read,
-	avm_m0_waitrequest,
-	avm_m0_readdata,
-	avm_m0_write,
-	avm_m0_writedata,
-	avm_m0_readdatavalid,
-	avm_m0_clk_clk,
-	avm_m0_reset_reset,
 	clk_clk,
 	dac_spi_ext_MISO,
 	dac_spi_ext_MOSI,
@@ -34,18 +25,8 @@ module lms_ctr (
 	leds_external_connection_export,
 	lms_ctr_gpio_external_connection_export,
 	reset_reset_n,
-	switch_external_connection_export,
-	vctcxo_tamer_0_ctrl_export);	
+	switch_external_connection_export);	
 
-	output	[7:0]	avm_m0_address;
-	output		avm_m0_read;
-	input		avm_m0_waitrequest;
-	input	[7:0]	avm_m0_readdata;
-	output		avm_m0_write;
-	output	[7:0]	avm_m0_writedata;
-	input		avm_m0_readdatavalid;
-	output		avm_m0_clk_clk;
-	output		avm_m0_reset_reset;
 	input		clk_clk;
 	input		dac_spi_ext_MISO;
 	output		dac_spi_ext_MOSI;
@@ -72,5 +53,4 @@ module lms_ctr (
 	output	[3:0]	lms_ctr_gpio_external_connection_export;
 	input		reset_reset_n;
 	input	[7:0]	switch_external_connection_export;
-	input	[3:0]	vctcxo_tamer_0_ctrl_export;
 endmodule
