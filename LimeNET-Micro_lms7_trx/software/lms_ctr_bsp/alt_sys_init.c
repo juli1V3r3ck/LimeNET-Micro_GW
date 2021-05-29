@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_cpu' in SOPC Builder design 'lms_ctr'
  * SOPC Builder design path: ../../lms_ctr.sopcinfo
  *
- * Generated: Sun May 09 20:12:00 CEST 2021
+ * Generated: Sat May 29 17:24:07 CEST 2021
  */
 
 /*

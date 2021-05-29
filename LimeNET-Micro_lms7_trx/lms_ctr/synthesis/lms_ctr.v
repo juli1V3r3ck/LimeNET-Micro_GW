@@ -5,6 +5,10 @@
 `timescale 1 ps / 1 ps
 module lms_ctr (
 		input  wire        clk_clk,                                 //                              clk.clk
+		input  wire        dac_spi_ext_MISO,                        //                      dac_spi_ext.MISO
+		output wire        dac_spi_ext_MOSI,                        //                                 .MOSI
+		output wire        dac_spi_ext_SCLK,                        //                                 .SCLK
+		output wire        dac_spi_ext_SS_n,                        //                                 .SS_n
 		input  wire [31:0] exfifo_if_d_export,                      //                      exfifo_if_d.export
 		output wire        exfifo_if_rd_export,                     //                     exfifo_if_rd.export
 		input  wire        exfifo_if_rdempty_export,                //                exfifo_if_rdempty.export
@@ -144,6 +148,12 @@ module lms_ctr (
 	wire         mm_interconnect_0_fpga_spi_spi_control_port_read;                            // mm_interconnect_0:fpga_spi_spi_control_port_read -> fpga_spi:read_n
 	wire         mm_interconnect_0_fpga_spi_spi_control_port_write;                           // mm_interconnect_0:fpga_spi_spi_control_port_write -> fpga_spi:write_n
 	wire  [15:0] mm_interconnect_0_fpga_spi_spi_control_port_writedata;                       // mm_interconnect_0:fpga_spi_spi_control_port_writedata -> fpga_spi:data_from_cpu
+	wire         mm_interconnect_0_dac_spi_spi_control_port_chipselect;                       // mm_interconnect_0:dac_spi_spi_control_port_chipselect -> dac_spi:spi_select
+	wire  [15:0] mm_interconnect_0_dac_spi_spi_control_port_readdata;                         // dac_spi:data_to_cpu -> mm_interconnect_0:dac_spi_spi_control_port_readdata
+	wire   [2:0] mm_interconnect_0_dac_spi_spi_control_port_address;                          // mm_interconnect_0:dac_spi_spi_control_port_address -> dac_spi:mem_addr
+	wire         mm_interconnect_0_dac_spi_spi_control_port_read;                             // mm_interconnect_0:dac_spi_spi_control_port_read -> dac_spi:read_n
+	wire         mm_interconnect_0_dac_spi_spi_control_port_write;                            // mm_interconnect_0:dac_spi_spi_control_port_write -> dac_spi:write_n
+	wire  [15:0] mm_interconnect_0_dac_spi_spi_control_port_writedata;                        // mm_interconnect_0:dac_spi_spi_control_port_writedata -> dac_spi:data_from_cpu
 	wire         mm_interconnect_0_flash_spi_spi_control_port_chipselect;                     // mm_interconnect_0:flash_spi_spi_control_port_chipselect -> flash_spi:spi_select
 	wire  [15:0] mm_interconnect_0_flash_spi_spi_control_port_readdata;                       // flash_spi:data_to_cpu -> mm_interconnect_0:flash_spi_spi_control_port_readdata
 	wire   [2:0] mm_interconnect_0_flash_spi_spi_control_port_address;                        // mm_interconnect_0:flash_spi_spi_control_port_address -> flash_spi:mem_addr
@@ -152,9 +162,10 @@ module lms_ctr (
 	wire  [15:0] mm_interconnect_0_flash_spi_spi_control_port_writedata;                      // mm_interconnect_0:flash_spi_spi_control_port_writedata -> flash_spi:data_from_cpu
 	wire         irq_mapper_receiver0_irq;                                                    // i2c_opencores_0:wb_inta_o -> irq_mapper:receiver0_irq
 	wire         irq_mapper_receiver1_irq;                                                    // fpga_spi:irq -> irq_mapper:receiver1_irq
-	wire         irq_mapper_receiver2_irq;                                                    // flash_spi:irq -> irq_mapper:receiver2_irq
+	wire         irq_mapper_receiver2_irq;                                                    // dac_spi:irq -> irq_mapper:receiver2_irq
+	wire         irq_mapper_receiver3_irq;                                                    // flash_spi:irq -> irq_mapper:receiver3_irq
 	wire  [31:0] nios2_cpu_irq_irq;                                                           // irq_mapper:sender_irq -> nios2_cpu:irq
-	wire         rst_controller_reset_out_reset;                                              // rst_controller:reset_out -> [Av_FIFO_Int_0:rsi_nrst, flash_spi:reset_n, fpga_spi:reset_n, i2c_opencores_0:wb_rst_i, irq_mapper:reset, leds:reset_n, lms_ctr_gpio:reset_n, mm_interconnect_0:nios2_cpu_reset_reset_bridge_in_reset_reset, nios2_cpu:reset_n, rst_translator:in_reset, switch:reset_n, sysid_qsys_0:reset_n]
+	wire         rst_controller_reset_out_reset;                                              // rst_controller:reset_out -> [Av_FIFO_Int_0:rsi_nrst, dac_spi:reset_n, flash_spi:reset_n, fpga_spi:reset_n, i2c_opencores_0:wb_rst_i, irq_mapper:reset, leds:reset_n, lms_ctr_gpio:reset_n, mm_interconnect_0:nios2_cpu_reset_reset_bridge_in_reset_reset, nios2_cpu:reset_n, rst_translator:in_reset, switch:reset_n, sysid_qsys_0:reset_n]
 	wire         rst_controller_reset_out_reset_req;                                          // rst_controller:reset_req -> [nios2_cpu:reset_req, rst_translator:reset_req_in]
 	wire         nios2_cpu_debug_reset_request_reset;                                         // nios2_cpu:debug_reset_request -> [rst_controller:reset_in1, rst_controller_001:reset_in0]
 	wire         rst_controller_001_reset_out_reset;                                          // rst_controller_001:reset_out -> [dual_boot_0:nreset, mm_interconnect_0:dual_boot_0_nreset_reset_bridge_in_reset_reset, onchip_flash_0:reset_n, onchip_memory2_0:reset, rst_translator_001:in_reset]
@@ -180,6 +191,22 @@ module lms_ctr (
 		.coe_fifo_rst   (exfifo_rst_export)                                          //   cnd_fifo_rst.export
 	);
 
+	lms_ctr_dac_spi dac_spi (
+		.clk           (clk_clk),                                               //              clk.clk
+		.reset_n       (~rst_controller_reset_out_reset),                       //            reset.reset_n
+		.data_from_cpu (mm_interconnect_0_dac_spi_spi_control_port_writedata),  // spi_control_port.writedata
+		.data_to_cpu   (mm_interconnect_0_dac_spi_spi_control_port_readdata),   //                 .readdata
+		.mem_addr      (mm_interconnect_0_dac_spi_spi_control_port_address),    //                 .address
+		.read_n        (~mm_interconnect_0_dac_spi_spi_control_port_read),      //                 .read_n
+		.spi_select    (mm_interconnect_0_dac_spi_spi_control_port_chipselect), //                 .chipselect
+		.write_n       (~mm_interconnect_0_dac_spi_spi_control_port_write),     //                 .write_n
+		.irq           (irq_mapper_receiver2_irq),                              //              irq.irq
+		.MISO          (dac_spi_ext_MISO),                                      //         external.export
+		.MOSI          (dac_spi_ext_MOSI),                                      //                 .export
+		.SCLK          (dac_spi_ext_SCLK),                                      //                 .export
+		.SS_n          (dac_spi_ext_SS_n)                                       //                 .export
+	);
+
 	altera_dual_boot #(
 		.INTENDED_DEVICE_FAMILY ("MAX 10"),
 		.CONFIG_CYCLE           (15),
@@ -203,7 +230,7 @@ module lms_ctr (
 		.read_n        (~mm_interconnect_0_flash_spi_spi_control_port_read),      //                 .read_n
 		.spi_select    (mm_interconnect_0_flash_spi_spi_control_port_chipselect), //                 .chipselect
 		.write_n       (~mm_interconnect_0_flash_spi_spi_control_port_write),     //                 .write_n
-		.irq           (irq_mapper_receiver2_irq),                                //              irq.irq
+		.irq           (irq_mapper_receiver3_irq),                                //              irq.irq
 		.MISO          (flash_spi_MISO),                                          //         external.export
 		.MOSI          (flash_spi_MOSI),                                          //                 .export
 		.SCLK          (flash_spi_SCLK),                                          //                 .export
@@ -558,6 +585,12 @@ module lms_ctr (
 		.Av_FIFO_Int_0_avalon_slave_0_readdata          (mm_interconnect_0_av_fifo_int_0_avalon_slave_0_readdata),       //                                         .readdata
 		.Av_FIFO_Int_0_avalon_slave_0_writedata         (mm_interconnect_0_av_fifo_int_0_avalon_slave_0_writedata),      //                                         .writedata
 		.Av_FIFO_Int_0_avalon_slave_0_chipselect        (mm_interconnect_0_av_fifo_int_0_avalon_slave_0_chipselect),     //                                         .chipselect
+		.dac_spi_spi_control_port_address               (mm_interconnect_0_dac_spi_spi_control_port_address),            //                 dac_spi_spi_control_port.address
+		.dac_spi_spi_control_port_write                 (mm_interconnect_0_dac_spi_spi_control_port_write),              //                                         .write
+		.dac_spi_spi_control_port_read                  (mm_interconnect_0_dac_spi_spi_control_port_read),               //                                         .read
+		.dac_spi_spi_control_port_readdata              (mm_interconnect_0_dac_spi_spi_control_port_readdata),           //                                         .readdata
+		.dac_spi_spi_control_port_writedata             (mm_interconnect_0_dac_spi_spi_control_port_writedata),          //                                         .writedata
+		.dac_spi_spi_control_port_chipselect            (mm_interconnect_0_dac_spi_spi_control_port_chipselect),         //                                         .chipselect
 		.dual_boot_0_avalon_address                     (mm_interconnect_0_dual_boot_0_avalon_address),                  //                       dual_boot_0_avalon.address
 		.dual_boot_0_avalon_write                       (mm_interconnect_0_dual_boot_0_avalon_write),                    //                                         .write
 		.dual_boot_0_avalon_read                        (mm_interconnect_0_dual_boot_0_avalon_read),                     //                                         .read
@@ -631,6 +664,7 @@ module lms_ctr (
 		.receiver0_irq (irq_mapper_receiver0_irq),       // receiver0.irq
 		.receiver1_irq (irq_mapper_receiver1_irq),       // receiver1.irq
 		.receiver2_irq (irq_mapper_receiver2_irq),       // receiver2.irq
+		.receiver3_irq (irq_mapper_receiver3_irq),       // receiver3.irq
 		.sender_irq    (nios2_cpu_irq_irq)               //    sender.irq
 	);
 

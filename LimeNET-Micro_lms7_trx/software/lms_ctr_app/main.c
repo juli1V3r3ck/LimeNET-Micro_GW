@@ -32,7 +32,8 @@
 //#define FW_VER				3 //Temperature and Si5351C control added
 //#define FW_VER				4 //LM75 configured to control fan; I2C speed increased up to 400kHz; ADF/DAC control implementation.
 //#define FW_VER				5 //EEPROM and FLASH R/W funtionality added
-#define FW_VER				6 // DAC value read from EEPROM memory
+//#define FW_VER				6 // DAC value read from EEPROM memory
+#define FW_VER                  7 // Removal of VCTCXO calibration because gnss module is removed
 
 #define SPI_NR_LMS7002M 0
 #define SPI_NR_FPGA     1
@@ -179,6 +180,73 @@ void testEEPROM(void)
 	converted_val = I2C_read(I2C_OPENCORES_0_BASE, 1);
 }
 
+/**
+ *	@brief Function to control DAC for TCXO frequency control
+ *	@param oe output enable control: 0 - output disabled, 1 - output enabled
+ *	@param data pointer to DAC value (1 byte)
+ */
+void Control_TCXO_DAC (unsigned char oe, uint16_t *data) //controls DAC (AD5601)
+{
+	volatile int spirez;
+	unsigned char DAC_data[3];
+
+	if (oe == 0) //set DAC out to three-state
+	{
+		DAC_data[0] = 0x03; //POWER-DOWN MODE = THREE-STATE (MSB bits = 11) + MSB data
+		DAC_data[1] = 0x00;
+		DAC_data[2] = 0x00; //LSB data
+
+		spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 3, DAC_data, 0, NULL, 0);
+	}
+	else //enable DAC output, set new val
+	{
+		DAC_data[0] = 0; //POWER-DOWN MODE = NORMAL OPERATION PD[1:0]([17:16]) = 00)
+		DAC_data[1] = ((*data) >>8) & 0xFF;
+		DAC_data[2] = ((*data) >>0) & 0xFF;
+
+	    /* Update cached value of trim DAC setting */
+	    // vctcxo_trim_dac_value = (uint16_t) *data;
+		spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 3, DAC_data, 0, NULL, 0);
+
+
+	}
+}
+
+
+void Control_TCXO_ADF (unsigned char oe, unsigned char *data) //controls ADF4002
+{
+	volatile int spirez;
+	unsigned char ADF_data[12], ADF_block;
+
+	if (oe == 0) //set ADF4002 CP to three-state and MUX_OUT to DGND
+	{
+		ADF_data[0] = 0x1f;
+		ADF_data[1] = 0x81;
+		ADF_data[2] = 0xf3;
+		ADF_data[3] = 0x1f;
+		ADF_data[4] = 0x81;
+		ADF_data[5] = 0xf2;
+		ADF_data[6] = 0x00;
+		ADF_data[7] = 0x01;
+		ADF_data[8] = 0xf4;
+		ADF_data[9] = 0x01;
+		ADF_data[10] = 0x80;
+		ADF_data[11] = 0x01;
+
+		//Reconfigure_SPI_for_LMS();
+
+		//write data to ADF
+		for(ADF_block = 0; ADF_block < 4; ADF_block++)
+		{
+			spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_ADF4002, 3, &ADF_data[ADF_block*3], 0, NULL, 0);
+		}
+	}
+	else //set PLL parameters, 4 blocks must be written
+	{
+		spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_ADF4002, 3, data, 0, NULL, 0);
+	}
+}
+
 void boot_from_flash(void)
 {
 	//set CONFIG_SEL overwrite to 1 and CONFIG_SEL to Image 1
@@ -190,73 +258,6 @@ void boot_from_flash(void)
 	//Trigger reconfiguration to selected Image
 	IOWR(DUAL_BOOT_0_BASE, 0, 0x00000001);
 }
-
-/**
- *	@brief Function to control DAC for TCXO frequency control
- *	@param oe output enable control: 0 - output disabled, 1 - output enabled
- *	@param data pointer to DAC value (1 byte)
- */
-// void Control_TCXO_DAC (unsigned char oe, uint16_t *data) //controls DAC (AD5601)
-// {
-// 	volatile int spirez;
-// 	unsigned char DAC_data[3];
-
-// 	if (oe == 0) //set DAC out to three-state
-// 	{
-// 		DAC_data[0] = 0x03; //POWER-DOWN MODE = THREE-STATE (MSB bits = 11) + MSB data
-// 		DAC_data[1] = 0x00;
-// 		DAC_data[2] = 0x00; //LSB data
-
-// 		spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 3, DAC_data, 0, NULL, 0);
-// 	}
-// 	else //enable DAC output, set new val
-// 	{
-// 		DAC_data[0] = 0; //POWER-DOWN MODE = NORMAL OPERATION PD[1:0]([17:16]) = 00)
-// 		DAC_data[1] = ((*data) >>8) & 0xFF;
-// 		DAC_data[2] = ((*data) >>0) & 0xFF;
-
-// 	    /* Update cached value of trim DAC setting */
-// 	    vctcxo_trim_dac_value = (uint16_t) *data;
-// 		spirez = alt_avalon_spi_command(DAC_SPI_BASE, SPI_NR_DAC, 3, DAC_data, 0, NULL, 0);
-
-
-// 	}
-// }
-
-
-// void Control_TCXO_ADF (unsigned char oe, unsigned char *data) //controls ADF4002
-// {
-// 	volatile int spirez;
-// 	unsigned char ADF_data[12], ADF_block;
-
-// 	if (oe == 0) //set ADF4002 CP to three-state and MUX_OUT to DGND
-// 	{
-// 		ADF_data[0] = 0x1f;
-// 		ADF_data[1] = 0x81;
-// 		ADF_data[2] = 0xf3;
-// 		ADF_data[3] = 0x1f;
-// 		ADF_data[4] = 0x81;
-// 		ADF_data[5] = 0xf2;
-// 		ADF_data[6] = 0x00;
-// 		ADF_data[7] = 0x01;
-// 		ADF_data[8] = 0xf4;
-// 		ADF_data[9] = 0x01;
-// 		ADF_data[10] = 0x80;
-// 		ADF_data[11] = 0x01;
-
-// 		//Reconfigure_SPI_for_LMS();
-
-// 		//write data to ADF
-// 		for(ADF_block = 0; ADF_block < 4; ADF_block++)
-// 		{
-// 			spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_ADF4002, 3, &ADF_data[ADF_block*3], 0, NULL, 0);
-// 		}
-// 	}
-// 	else //set PLL parameters, 4 blocks must be written
-// 	{
-// 		spirez = alt_avalon_spi_command(FPGA_SPI_BASE, SPI_NR_ADF4002, 3, data, 0, NULL, 0);
-// 	}
-// }
 
 uint16_t rd_dac_val(uint16_t addr)
 {
@@ -277,7 +278,6 @@ uint16_t rd_dac_val(uint16_t addr)
 	rez = ((uint16_t)eeprom_rd_val_1 << 8) | eeprom_rd_val_0;
 	return rez;
 }
-
 
 /**
  * Main, what else? :)
@@ -334,7 +334,7 @@ int main()
 
     // Write initial data to the DAC
     //Control_TCXO_ADF (0, NULL);		// set ADF4002 CP to three-state
-	//Control_TCXO_DAC (1, &dac_val); // enable DAC output, set new val
+	Control_TCXO_DAC (1, &dac_val); // enable DAC output, set new val
 
     // Configure LM75
     Configure_LM75();
@@ -846,18 +846,18 @@ int main()
 					{
 						switch (LMS_Ctrl_Packet_Rx->Data_field[0 + (block * 4)]) //do something according to channel
 						{
-							// case 0:
-							// 	if (LMS_Ctrl_Packet_Rx->Data_field[1 + (block * 4)] == 0) //RAW units?
-							// 	{
-							// 		Control_TCXO_ADF(0, NULL); //set ADF4002 CP to three-state
+							case 0:
+								if (LMS_Ctrl_Packet_Rx->Data_field[1 + (block * 4)] == 0) //RAW units?
+								{
+									Control_TCXO_ADF(0, NULL); //set ADF4002 CP to three-state
 
-							// 		dac_val = (LMS_Ctrl_Packet_Rx->Data_field[2 + (block * 4)] << 8 ) + LMS_Ctrl_Packet_Rx->Data_field[3 + (block * 4)];
+									dac_val = (LMS_Ctrl_Packet_Rx->Data_field[2 + (block * 4)] << 8 ) + LMS_Ctrl_Packet_Rx->Data_field[3 + (block * 4)];
 
-							// 		Control_TCXO_DAC (1, &dac_val);
-							// 	}
-							// 	else cmd_errors++;
+									Control_TCXO_DAC (1, &dac_val);
+								}
+								else cmd_errors++;
 
-							// break;
+							break;
 
 							default:
 								cmd_errors++;
