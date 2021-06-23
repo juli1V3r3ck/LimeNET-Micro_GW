@@ -53,7 +53,7 @@
    {
       datum _sortIndex
       {
-         value = "11";
+         value = "12";
          type = "int";
       }
    }
@@ -69,7 +69,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "14";
          type = "int";
       }
    }
@@ -101,7 +101,7 @@
    {
       datum _sortIndex
       {
-         value = "9";
+         value = "10";
          type = "int";
       }
    }
@@ -141,7 +141,7 @@
    {
       datum _originalDeviceFamily
       {
-         value = "Cyclone IV GX";
+         value = "MAX 10";
          type = "String";
       }
    }
@@ -149,7 +149,7 @@
    {
       datum _originalDeviceFamily
       {
-         value = "MAX 10";
+         value = "Cyclone IV GX";
          type = "String";
       }
    }
@@ -202,7 +202,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "9";
          type = "int";
       }
    }
@@ -210,7 +210,7 @@
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "11";
          type = "int";
       }
    }
@@ -239,7 +239,7 @@
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "13";
          type = "int";
       }
    }
@@ -305,6 +305,11 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_main.clk_in" type="clock" dir="end" />
+ <interface
+   name="dac_spi_ext"
+   internal="dac_spi.external"
+   type="conduit"
+   dir="end" />
  <interface
    name="exfifo_if_d"
    internal="Av_FIFO_Int_0.cnd_if_d"
@@ -385,6 +390,22 @@
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module name="dac_spi" kind="altera_avalon_spi" version="18.1" enabled="1">
+  <parameter name="avalonSpec" value="2.0" />
+  <parameter name="clockPhase" value="1" />
+  <parameter name="clockPolarity" value="0" />
+  <parameter name="dataWidth" value="8" />
+  <parameter name="disableAvalonFlowControl" value="false" />
+  <parameter name="inputClockRate" value="30720000" />
+  <parameter name="insertDelayBetweenSlaveSelectAndSClk" value="false" />
+  <parameter name="insertSync" value="false" />
+  <parameter name="lsbOrderedFirst" value="false" />
+  <parameter name="masterSPI" value="true" />
+  <parameter name="numberOfSlaves" value="1" />
+  <parameter name="syncRegDepth" value="2" />
+  <parameter name="targetClockRate" value="10000000" />
+  <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
  </module>
  <module name="dual_boot_0" kind="altera_dual_boot" version="18.1" enabled="1">
   <parameter name="CLOCK_FREQUENCY" value="40.0" />
@@ -885,6 +906,7 @@
    start="clk_main.clk"
    end="dual_boot_0.clk" />
  <connection kind="clock" version="18.1" start="clk_main.clk" end="flash_spi.clk" />
+ <connection kind="clock" version="18.1" start="clk_main.clk" end="dac_spi.clk" />
  <connection
    kind="clock"
    version="18.1"
@@ -981,6 +1003,11 @@
    kind="reset"
    version="18.1"
    start="clk_main.clk_reset"
+   end="dac_spi.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk_main.clk_reset"
    end="flash_spi.reset" />
  <connection
    kind="reset"
@@ -1032,6 +1059,11 @@
    version="18.1"
    start="nios2_cpu.debug_reset_request"
    end="Av_FIFO_Int_0.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="nios2_cpu.debug_reset_request"
+   end="dac_spi.reset" />
  <connection
    kind="reset"
    version="18.1"
