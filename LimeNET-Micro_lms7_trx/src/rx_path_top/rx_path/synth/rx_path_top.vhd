@@ -254,7 +254,7 @@ smpl_fifo_inst1 : entity work.fifo_inst
       reset_n        => reset_n_sync,
       wrclk          => clk,
       wrreq          => inst0_fifo_wrreq,
-      data           => inst0_fifo_wdata,
+      data           => inst0_fifo_wdata(23 downto 0) & inst0_fifo_wdata(47 downto 24),
       wrfull         => inst1_wrfull,
       wrempty        => open,
       wrusedw        => open,

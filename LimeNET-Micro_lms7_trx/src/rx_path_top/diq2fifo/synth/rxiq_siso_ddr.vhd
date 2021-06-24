@@ -152,7 +152,8 @@ diq_pos3_reg_proc : process(reset_n, clk)
 -- FIFO data and FIFO data valid signals
 -- ---------------------------------------------------------------------------- 
 --fifo_data <= diq_pos0_reg & diq_pos1_reg & diq_pos2_reg & diq_pos3_reg;
-fifo_data <= diq_pos3_reg & diq_pos2_reg & diq_pos1_reg & diq_pos0_reg;
+--fifo_data <= diq_pos3_reg & diq_pos2_reg & diq_pos1_reg & diq_pos0_reg;
+fifo_data <= diq_pos1_reg & diq_pos0_reg & diq_pos3_reg & diq_pos2_reg;
 
 fifo_data_valid_proc : process(reset_n, clk)
     begin
