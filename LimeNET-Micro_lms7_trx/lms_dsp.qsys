@@ -13,19 +13,11 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "3";
          type = "int";
       }
    }
    element FIFO2AVS_0
-   {
-      datum _sortIndex
-      {
-         value = "5";
-         type = "int";
-      }
-   }
-   element Preamble_detect_0
    {
       datum _sortIndex
       {
@@ -38,14 +30,6 @@
       datum _sortIndex
       {
          value = "0";
-         type = "int";
-      }
-   }
-   element demultiplexer_0
-   {
-      datum _sortIndex
-      {
-         value = "3";
          type = "int";
       }
    }
@@ -129,14 +113,6 @@
          type = "String";
       }
    }
-   element multiplexer_0
-   {
-      datum _sortIndex
-      {
-         value = "4";
-         type = "int";
-      }
-   }
 }
 ]]></parameter>
  <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
@@ -160,11 +136,6 @@
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
  <interface
-   name="dsp_en"
-   internal="FIFO2AVS_0.datapath_ctrl"
-   type="conduit"
-   dir="end" />
- <interface
    name="fifo_in"
    internal="FIFO2AVS_0.conduit_in"
    type="conduit"
@@ -181,29 +152,11 @@
  <module name="FIFO2AVS_0" kind="FIFO2AVS" version="1.0" enabled="1">
   <parameter name="datawidth" value="48" />
  </module>
- <module
-   name="Preamble_detect_0"
-   kind="Preamble_detect"
-   version="1.0"
-   enabled="1" />
  <module name="clk_0" kind="clock_source" version="18.1" enabled="1">
-  <parameter name="clockFrequency" value="50000000" />
+  <parameter name="clockFrequency" value="125000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
- </module>
- <module
-   name="demultiplexer_0"
-   kind="demultiplexer"
-   version="18.1"
-   enabled="1">
-  <parameter name="bitsPerSymbol" value="12" />
-  <parameter name="errorWidth" value="0" />
-  <parameter name="inChannelWidth" value="1" />
-  <parameter name="numOutputInterfaces" value="2" />
-  <parameter name="symbolsPerBeat" value="4" />
-  <parameter name="useHighBitsOfChannel" value="true" />
-  <parameter name="usePackets" value="false" />
  </module>
  <module
    name="fir_compiler_ii_0"
@@ -217,14 +170,14 @@
   <parameter name="bankDisplay" value="0" />
   <parameter name="baseAddress" value="0" />
   <parameter name="channelModes" value="0,1,2,3" />
-  <parameter name="clockRate" value="100" />
+  <parameter name="clockRate" value="125" />
   <parameter name="clockSlack" value="0" />
   <parameter name="coeffBitWidth" value="8" />
   <parameter name="coeffComplex" value="false" />
   <parameter name="coeffFracBitWidth" value="8" />
   <parameter name="coeffReload" value="false" />
   <parameter name="coeffScaling" value="none" />
-  <parameter name="coeffSetRealValue">0.0176663,0.013227,0.0,-0.0149911,-0.0227152,-0.0172976,0.0,0.0204448,0.0318046,0.0249882,0.0,-0.0321283,-0.0530093,-0.04498,0.0,0.0749693,0.159034,0.224907,0.249809,0.224907,0.159034,0.0749693,0.0,-0.04498,-0.0530093,-0.0321283,0.0,0.0249882,0.0318046,0.0204448,0.0,-0.0172976,-0.0227152,-0.0149911,0.0,0.013227,0.0176663</parameter>
+  <parameter name="coeffSetRealValue">-6.252251415626991E-19,-8.456016179007688E-4,-0.0017283138484922853,-0.0023230779919154957,-0.0019675749945816993,1.6781893156862223E-18,0.003611988794853547,0.007730581755007019,0.010061261193911493,0.007980217084247454,-4.220269705548216E-18,-0.012752775291227302,-0.025876195975123386,-0.03246387704469053,-0.025331587069969665,6.7623500954102105E-18,0.04276904140861511,0.09608412542178715,0.1483175264275319,0.186490934807653,0.20048665388058895,0.186490934807653,0.1483175264275319,0.09608412542178715,0.04276904140861511,6.7623500954102105E-18,-0.025331587069969665,-0.03246387704469053,-0.025876195975123386,-0.012752775291227302,-4.220269705548216E-18,0.007980217084247454,0.010061261193911493,0.007730581755007019,0.003611988794853547,1.6781893156862223E-18,-0.0019675749945816993,-0.0023230779919154957,-0.0017283138484922853,-8.456016179007688E-4,-6.252251415626991E-19</parameter>
   <parameter name="coeffSetRealValueImag">0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0</parameter>
   <parameter name="coeffType" value="frac" />
   <parameter name="decimFactor" value="1" />
@@ -236,7 +189,7 @@
   <parameter name="inputBitWidth" value="12" />
   <parameter name="inputChannelNum" value="2" />
   <parameter name="inputFracBitWidth" value="11" />
-  <parameter name="inputRate" value="100" />
+  <parameter name="inputRate" value="125" />
   <parameter name="inputType" value="frac" />
   <parameter name="interpFactor" value="1" />
   <parameter name="karatsuba" value="false" />
@@ -250,49 +203,18 @@
   <parameter name="readWriteMode" value="read_write" />
   <parameter name="reconfigurable" value="false" />
   <parameter name="reconfigurable_list" value="0" />
-  <parameter name="speedGrade" value="medium" />
+  <parameter name="speedGrade" value="fast" />
   <parameter name="symmetryMode" value="nsym" />
- </module>
- <module name="multiplexer_0" kind="multiplexer" version="18.1" enabled="1">
-  <parameter name="bitsPerSymbol" value="12" />
-  <parameter name="errorWidth" value="0" />
-  <parameter name="numInputInterfaces" value="2" />
-  <parameter name="outChannelWidth" value="1" />
-  <parameter name="packetScheduling" value="false" />
-  <parameter name="schedulingSize" value="1" />
-  <parameter name="symbolsPerBeat" value="4" />
-  <parameter name="useHighBitsOfChannel" value="true" />
-  <parameter name="usePackets" value="false" />
  </module>
  <connection
    kind="avalon_streaming"
    version="18.1"
    start="fir_compiler_ii_0.avalon_streaming_source"
-   end="Preamble_detect_0.avalon_streaming_sink" />
- <connection
-   kind="avalon_streaming"
-   version="18.1"
-   start="FIFO2AVS_0.avalon_streaming_source"
-   end="demultiplexer_0.in" />
- <connection
-   kind="avalon_streaming"
-   version="18.1"
-   start="Preamble_detect_0.avalon_streaming_source"
-   end="multiplexer_0.in1" />
- <connection
-   kind="avalon_streaming"
-   version="18.1"
-   start="multiplexer_0.out"
    end="AVS2FIFO_0.avalon_streaming_sink" />
  <connection
    kind="avalon_streaming"
    version="18.1"
-   start="demultiplexer_0.out0"
-   end="multiplexer_0.in0" />
- <connection
-   kind="avalon_streaming"
-   version="18.1"
-   start="demultiplexer_0.out1"
+   start="FIFO2AVS_0.avalon_streaming_source"
    end="fir_compiler_ii_0.avalon_streaming_sink" />
  <connection
    kind="clock"
@@ -303,48 +225,22 @@
    kind="clock"
    version="18.1"
    start="clk_0.clk"
-   end="demultiplexer_0.clk" />
- <connection kind="clock" version="18.1" start="clk_0.clk" end="multiplexer_0.clk" />
- <connection
-   kind="clock"
-   version="18.1"
-   start="clk_0.clk"
-   end="Preamble_detect_0.clock_sink" />
+   end="AVS2FIFO_0.clock_sink" />
  <connection
    kind="clock"
    version="18.1"
    start="clk_0.clk"
    end="FIFO2AVS_0.clock_sink" />
  <connection
-   kind="clock"
-   version="18.1"
-   start="clk_0.clk"
-   end="AVS2FIFO_0.clock_sink" />
- <connection
    kind="reset"
    version="18.1"
    start="clk_0.clk_reset"
-   end="demultiplexer_0.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk_0.clk_reset"
-   end="multiplexer_0.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk_0.clk_reset"
-   end="Preamble_detect_0.reset_sink" />
+   end="AVS2FIFO_0.reset_sink" />
  <connection
    kind="reset"
    version="18.1"
    start="clk_0.clk_reset"
    end="FIFO2AVS_0.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk_0.clk_reset"
-   end="AVS2FIFO_0.reset_sink" />
  <connection
    kind="reset"
    version="18.1"
