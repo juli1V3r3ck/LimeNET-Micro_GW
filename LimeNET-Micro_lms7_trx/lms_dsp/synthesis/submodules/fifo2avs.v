@@ -12,34 +12,28 @@
 module fifo2avs #(
 		parameter datawidth = 48
 	) (
-		output wire                 avalon_streaming_source_channel, //avalon_streaming_source.channel
 		output wire [datawidth-1:0] avalon_streaming_source_data,    //                       .data
 		output wire        avalon_streaming_source_valid,            //                       .valid
 		input  wire        clock_sink_clk,                           //             clock_sink.clk
 		input  wire        reset_sink_reset,                         //             reset_sink.reset
 		input  wire [datawidth-1:0] fifo_wdata,                      //             conduit_in.wdata
-		input  wire        fifo_wrreq,                               //                       .wrreq
-		input  wire        datapath_en                               //          datapath_ctrl.en
+		input  wire        fifo_wrreq                                //                       .wrreq
 	);
 
-	reg channel_reg;
 	reg valid_reg;
 	reg [datawidth-1:0] data_reg;
 
 	always @(posedge clock_sink_clk, posedge reset_sink_reset) begin
 		if (reset_sink_reset) begin
-			channel_reg <= 1'b0;
 			valid_reg <= 1'b0;
 			data_reg <= 'b0;
 		end
 		else begin
-			channel_reg <= datapath_en;
 			data_reg <= fifo_wdata;
 			valid_reg <= fifo_wrreq;
 		end
 	end
 
-	assign avalon_streaming_source_channel = channel_reg;
 	assign avalon_streaming_source_valid = valid_reg;
 	assign avalon_streaming_source_data = data_reg;
 

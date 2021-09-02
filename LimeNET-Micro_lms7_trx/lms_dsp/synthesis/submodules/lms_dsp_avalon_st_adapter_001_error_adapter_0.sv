@@ -43,7 +43,7 @@
 //   use_packets:        false
 //   use_empty:          0
 //   empty_width:        0
-//   data_width:         48
+//   data_width:         24
 //   channel_width:      0
 //   in_error_width:     0
 //   out_error_width:    2
@@ -68,11 +68,11 @@ module lms_dsp_avalon_st_adapter_001_error_adapter_0
  // Interface: in
  output reg         in_ready,
  input              in_valid,
- input [48-1: 0]     in_data,
+ input [24-1: 0]     in_data,
  // Interface: out
  input               out_ready,
  output reg          out_valid,
- output reg [48-1: 0] out_data,
+ output reg [24-1: 0] out_data,
  output reg [2-1: 0] out_error,
   // Interface: clk
  input              clk,

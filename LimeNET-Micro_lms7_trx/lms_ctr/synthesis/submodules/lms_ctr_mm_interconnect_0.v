@@ -1894,6 +1894,70 @@ module lms_ctr_mm_interconnect_0 (
 		.AV_WRITE_WAIT_CYCLES           (1),
 		.AV_SETUP_WAIT_CYCLES           (0),
 		.AV_DATA_HOLD_CYCLES            (0)
+	) dac_spi_spi_control_port_translator (
+		.clk                    (clk_main_clk_clk),                                //                      clk.clk
+		.reset                  (nios2_cpu_reset_reset_bridge_in_reset_reset),     //                    reset.reset
+		.uav_address            (dac_spi_spi_control_port_agent_m0_address),       // avalon_universal_slave_0.address
+		.uav_burstcount         (dac_spi_spi_control_port_agent_m0_burstcount),    //                         .burstcount
+		.uav_read               (dac_spi_spi_control_port_agent_m0_read),          //                         .read
+		.uav_write              (dac_spi_spi_control_port_agent_m0_write),         //                         .write
+		.uav_waitrequest        (dac_spi_spi_control_port_agent_m0_waitrequest),   //                         .waitrequest
+		.uav_readdatavalid      (dac_spi_spi_control_port_agent_m0_readdatavalid), //                         .readdatavalid
+		.uav_byteenable         (dac_spi_spi_control_port_agent_m0_byteenable),    //                         .byteenable
+		.uav_readdata           (dac_spi_spi_control_port_agent_m0_readdata),      //                         .readdata
+		.uav_writedata          (dac_spi_spi_control_port_agent_m0_writedata),     //                         .writedata
+		.uav_lock               (dac_spi_spi_control_port_agent_m0_lock),          //                         .lock
+		.uav_debugaccess        (dac_spi_spi_control_port_agent_m0_debugaccess),   //                         .debugaccess
+		.av_address             (dac_spi_spi_control_port_address),                //      avalon_anti_slave_0.address
+		.av_write               (dac_spi_spi_control_port_write),                  //                         .write
+		.av_read                (dac_spi_spi_control_port_read),                   //                         .read
+		.av_readdata            (dac_spi_spi_control_port_readdata),               //                         .readdata
+		.av_writedata           (dac_spi_spi_control_port_writedata),              //                         .writedata
+		.av_chipselect          (dac_spi_spi_control_port_chipselect),             //                         .chipselect
+		.av_begintransfer       (),                                                //              (terminated)
+		.av_beginbursttransfer  (),                                                //              (terminated)
+		.av_burstcount          (),                                                //              (terminated)
+		.av_byteenable          (),                                                //              (terminated)
+		.av_readdatavalid       (1'b0),                                            //              (terminated)
+		.av_waitrequest         (1'b0),                                            //              (terminated)
+		.av_writebyteenable     (),                                                //              (terminated)
+		.av_lock                (),                                                //              (terminated)
+		.av_clken               (),                                                //              (terminated)
+		.uav_clken              (1'b0),                                            //              (terminated)
+		.av_debugaccess         (),                                                //              (terminated)
+		.av_outputenable        (),                                                //              (terminated)
+		.uav_response           (),                                                //              (terminated)
+		.av_response            (2'b00),                                           //              (terminated)
+		.uav_writeresponsevalid (),                                                //              (terminated)
+		.av_writeresponsevalid  (1'b0)                                             //              (terminated)
+	);
+
+	altera_merlin_slave_translator #(
+		.AV_ADDRESS_W                   (3),
+		.AV_DATA_W                      (16),
+		.UAV_DATA_W                     (32),
+		.AV_BURSTCOUNT_W                (1),
+		.AV_BYTEENABLE_W                (1),
+		.UAV_BYTEENABLE_W               (4),
+		.UAV_ADDRESS_W                  (22),
+		.UAV_BURSTCOUNT_W               (3),
+		.AV_READLATENCY                 (0),
+		.USE_READDATAVALID              (0),
+		.USE_WAITREQUEST                (0),
+		.USE_UAV_CLKEN                  (0),
+		.USE_READRESPONSE               (0),
+		.USE_WRITERESPONSE              (0),
+		.AV_SYMBOLS_PER_WORD            (4),
+		.AV_ADDRESS_SYMBOLS             (0),
+		.AV_BURSTCOUNT_SYMBOLS          (0),
+		.AV_CONSTANT_BURST_BEHAVIOR     (0),
+		.UAV_CONSTANT_BURST_BEHAVIOR    (0),
+		.AV_REQUIRE_UNALIGNED_ADDRESSES (0),
+		.CHIPSELECT_THROUGH_READLATENCY (0),
+		.AV_READ_WAIT_CYCLES            (1),
+		.AV_WRITE_WAIT_CYCLES           (1),
+		.AV_SETUP_WAIT_CYCLES           (0),
+		.AV_DATA_HOLD_CYCLES            (0)
 	) flash_spi_spi_control_port_translator (
 		.clk                    (clk_main_clk_clk),                                  //                      clk.clk
 		.reset                  (nios2_cpu_reset_reset_bridge_in_reset_reset),       //                    reset.reset

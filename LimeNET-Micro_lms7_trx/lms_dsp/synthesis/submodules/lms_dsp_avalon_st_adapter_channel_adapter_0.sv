@@ -24,83 +24,64 @@
 // agreement for further details.
 
  
-// $Id: //acds/rel/13.1/ip/.../avalon-st_timing_adapter.sv.terp#1 $
+// $Id: //acds/rel/13.1/ip/.../avalon-st_channel_adapter.sv.terp#1 $
 // $Revision: #1 $
-// $Date: 2013/09/27 $
-// $Author: dmunday, korthner $
+// $Date: 2013/09/09 $
+// $Author: dmunday $
 
 // --------------------------------------------------------------------------------
-//| Avalon Streaming Timing Adapter
+//| Avalon Streaming Channel Adapter
 // --------------------------------------------------------------------------------
 
 `timescale 1ns / 100ps
+
 // ------------------------------------------
 // Generation parameters:
-//   output_name:        lms_dsp_avalon_st_adapter_002_timing_adapter_0
-//   in_use_ready:       true
-//   out_use_ready:      false
-//   in_use_valid:       true
-//   out_use_valid:      true
-//   use_packets:        false
-//   use_empty:          0
-//   empty_width:        0
-//   data_width:         48
-//   channel_width:      0
-//   error_width:        0
-//   in_ready_latency:   0
-//   out_ready_latency:  0
-//   in_payload_width:   48
-//   out_payload_width:  48
-//   in_payload_map:     in_data
-//   out_payload_map:    out_data
+//   output_name:         lms_dsp_avalon_st_adapter_channel_adapter_0
+//   in_channel_width:    1
+//   in_max_channel:      0
+//   out_channel_width:   1
+//   out_max_channel:     1
+//   data_width:          48
+//   error_width:         0
+//   use_ready:           false
+//   use_packets:         false
+//   use_empty:           0
+//   empty_width:         0
+
 // ------------------------------------------
 
 
-
-module lms_dsp_avalon_st_adapter_002_timing_adapter_0
-(  
- output reg         in_ready,
- input               in_valid,
- input     [48-1: 0]  in_data,
+module lms_dsp_avalon_st_adapter_channel_adapter_0 
+(
+ // Interface: in
+ input              in_valid,
+ input     [48-1: 0] in_data,
+ input              in_channel,
  // Interface: out
  output reg          out_valid,
  output reg [48-1: 0] out_data,
+ output reg          out_channel,
   // Interface: clk
  input              clk,
  // Interface: reset
  input              reset_n
+ 
+ 
+);
 
- /*AUTOARG*/);
-
-   // ---------------------------------------------------------------------
-   //| Signal Declarations
-   // ---------------------------------------------------------------------
-   
-   reg [48-1:0]   in_payload;
-   reg [48-1:0]   out_payload;
-   reg [1-1:0]   ready;   
 
    // ---------------------------------------------------------------------
    //| Payload Mapping
    // ---------------------------------------------------------------------
    always @* begin
-     in_payload = {in_data};
-     {out_data} = out_payload;
+      out_valid = in_valid;
+      out_data = in_data;
+
+      out_channel = 0;
+      out_channel = in_channel;                            
+
    end
-
-   // ---------------------------------------------------------------------
-   //| Ready & valid signals.
-   // ---------------------------------------------------------------------
-   always_comb begin
-     ready[0] = 1;
-     out_valid = in_valid;
-     out_payload = in_payload;
-     in_ready    = ready[0];
-   end
-
-
-
 
 endmodule
-
 

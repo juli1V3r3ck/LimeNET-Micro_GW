@@ -38,7 +38,7 @@
 
 // ------------------------------------------
 // Generation parameters:
-//   output_name:        lms_dsp_avalon_st_adapter_001_data_format_adapter_0
+//   output_name:        lms_dsp_avalon_st_adapter_003_data_format_adapter_0
 //   usePackets:         false
 //   hasInEmpty:         false
 //   inEmptyWidth:       0
@@ -62,7 +62,7 @@
 // ------------------------------------------
 
  
-module lms_dsp_avalon_st_adapter_001_data_format_adapter_0 (
+module lms_dsp_avalon_st_adapter_003_data_format_adapter_0 (
  // Interface: in
  output reg         in_ready,
  input              in_valid,

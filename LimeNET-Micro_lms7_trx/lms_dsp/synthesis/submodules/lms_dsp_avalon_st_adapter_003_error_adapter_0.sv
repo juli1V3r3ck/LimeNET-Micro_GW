@@ -24,83 +24,84 @@
 // agreement for further details.
 
  
-// $Id: //acds/rel/13.1/ip/.../avalon-st_timing_adapter.sv.terp#1 $
+// $Id: //acds/rel/13.1/ip/.../avalon-st_error_adapter.sv.terp#1 $
 // $Revision: #1 $
-// $Date: 2013/09/27 $
-// $Author: dmunday, korthner $
+// $Date: 2013/09/09 $
+// $Author: dmunday $
+
 
 // --------------------------------------------------------------------------------
-//| Avalon Streaming Timing Adapter
+//| Avalon Streaming Error Adapter
 // --------------------------------------------------------------------------------
 
 `timescale 1ns / 100ps
+
 // ------------------------------------------
 // Generation parameters:
-//   output_name:        lms_dsp_avalon_st_adapter_002_timing_adapter_0
-//   in_use_ready:       true
-//   out_use_ready:      false
-//   in_use_valid:       true
-//   out_use_valid:      true
+//   output_name:        lms_dsp_avalon_st_adapter_003_error_adapter_0
+//   use_ready:          true
 //   use_packets:        false
 //   use_empty:          0
 //   empty_width:        0
-//   data_width:         48
+//   data_width:         24
 //   channel_width:      0
-//   error_width:        0
-//   in_ready_latency:   0
-//   out_ready_latency:  0
-//   in_payload_width:   48
-//   out_payload_width:  48
-//   in_payload_map:     in_data
-//   out_payload_map:    out_data
+//   in_error_width:     0
+//   out_error_width:    2
+//   in_errors_list      
+//   in_errors_indices   0
+//   out_errors_list     
+//   has_in_error_desc:  FALSE
+//   has_out_error_desc: FALSE
+//   out_has_other:      FALSE
+//   out_other_index:    -1
+//   dumpVar:            
+//   inString:            in_error[
+//   closeString:        ] |
+
 // ------------------------------------------
 
 
 
-module lms_dsp_avalon_st_adapter_002_timing_adapter_0
-(  
+
+module lms_dsp_avalon_st_adapter_003_error_adapter_0
+(
+ // Interface: in
  output reg         in_ready,
- input               in_valid,
- input     [48-1: 0]  in_data,
+ input              in_valid,
+ input [24-1: 0]     in_data,
  // Interface: out
+ input               out_ready,
  output reg          out_valid,
- output reg [48-1: 0] out_data,
+ output reg [24-1: 0] out_data,
+ output reg [2-1: 0] out_error,
   // Interface: clk
  input              clk,
  // Interface: reset
  input              reset_n
 
  /*AUTOARG*/);
-
-   // ---------------------------------------------------------------------
-   //| Signal Declarations
-   // ---------------------------------------------------------------------
    
-   reg [48-1:0]   in_payload;
-   reg [48-1:0]   out_payload;
-   reg [1-1:0]   ready;   
+   reg in_error = 0;
+   initial in_error = 0;
 
    // ---------------------------------------------------------------------
-   //| Payload Mapping
-   // ---------------------------------------------------------------------
-   always @* begin
-     in_payload = {in_data};
-     {out_data} = out_payload;
-   end
-
-   // ---------------------------------------------------------------------
-   //| Ready & valid signals.
+   //| Pass-through Mapping
    // ---------------------------------------------------------------------
    always_comb begin
-     ready[0] = 1;
-     out_valid = in_valid;
-     out_payload = in_payload;
-     in_ready    = ready[0];
+      in_ready = out_ready;
+      out_valid = in_valid;
+      out_data = in_data;
+
    end
 
-
-
-
+   // ---------------------------------------------------------------------
+   //| Error Mapping 
+   // ---------------------------------------------------------------------
+   always_comb begin
+      out_error = 0;
+      
+      out_error = in_error;
+                                    
+   end //always @*
 endmodule
-
 

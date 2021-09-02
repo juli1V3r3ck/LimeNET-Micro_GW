@@ -5,8 +5,7 @@ module lms_dsp (
 	fifo_in_wrreq,
 	fifo_out_wrdata,
 	fifo_out_wrreq,
-	reset_reset_n,
-	dsp_en_en);	
+	reset_reset_n);	
 
 	input		clk_clk;
 	input	[47:0]	fifo_in_wdata;
@@ -14,5 +13,4 @@ module lms_dsp (
 	output	[47:0]	fifo_out_wrdata;
 	output		fifo_out_wrreq;
 	input		reset_reset_n;
-	input		dsp_en_en;
 endmodule

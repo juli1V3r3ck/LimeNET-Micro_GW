@@ -1,5 +1,9 @@
 	lms_ctr u0 (
 		.clk_clk                                 (<connected-to-clk_clk>),                                 //                              clk.clk
+		.dac_spi_ext_MISO                        (<connected-to-dac_spi_ext_MISO>),                        //                      dac_spi_ext.MISO
+		.dac_spi_ext_MOSI                        (<connected-to-dac_spi_ext_MOSI>),                        //                                 .MOSI
+		.dac_spi_ext_SCLK                        (<connected-to-dac_spi_ext_SCLK>),                        //                                 .SCLK
+		.dac_spi_ext_SS_n                        (<connected-to-dac_spi_ext_SS_n>),                        //                                 .SS_n
 		.exfifo_if_d_export                      (<connected-to-exfifo_if_d_export>),                      //                      exfifo_if_d.export
 		.exfifo_if_rd_export                     (<connected-to-exfifo_if_rd_export>),                     //                     exfifo_if_rd.export
 		.exfifo_if_rdempty_export                (<connected-to-exfifo_if_rdempty_export>),                //                exfifo_if_rdempty.export

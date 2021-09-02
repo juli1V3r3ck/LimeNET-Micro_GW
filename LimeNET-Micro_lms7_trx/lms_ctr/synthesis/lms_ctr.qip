@@ -2,7 +2,7 @@ set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_TOOL_NAME "Q
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_TOOL_VERSION "18.1"
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "lms_ctr" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../lms_ctr.sopcinfo"]
-set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name SLD_INFO "QSYS_NAME lms_ctr HAS_SOPCINFO 1 GENERATION_ID 1622301741"
+set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name SLD_INFO "QSYS_NAME lms_ctr HAS_SOPCINFO 1 GENERATION_ID 1624442002"
 set_global_assignment -library "lms_ctr" -name MISC_FILE [file join $::quartus(qip_path) "../lms_ctr.cmp"]
 set_global_assignment -library "lms_ctr" -name SLD_FILE [file join $::quartus(qip_path) "lms_ctr.regmap"]
 set_global_assignment -library "lms_ctr" -name SLD_FILE [file join $::quartus(qip_path) "lms_ctr.debuginfo"]
@@ -16,7 +16,7 @@ set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_DI
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_REPORT_HIERARCHY "On"
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_INTERNAL "Off"
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_VERSION "MS4w"
-set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTYyMjMwMTc0MQ==::QXV0byBHRU5FUkFUSU9OX0lE"
+set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTYyNDQ0MjAwMg==::QXV0byBHRU5FUkFUSU9OX0lE"
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::TUFYIDEw::QXV0byBERVZJQ0VfRkFNSUxZ"
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0U=::MTBNMTZTQVUxNjlDOEc=::QXV0byBERVZJQ0U="
 set_global_assignment -entity "lms_ctr" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfU1BFRURHUkFERQ==::OA==::QXV0byBERVZJQ0VfU1BFRURHUkFERQ=="
@@ -62,7 +62,7 @@ set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_C
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_VERSION "MTguMQ=="
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_DESCRIPTION "Q29udmVydHMgaW5kaXZpZHVhbCBpbnRlcnJ1cHQgd2lyZXMgdG8gYSBidXMuIEJ5IGRlZmF1bHQsIHRoZSBpbnRlcnJ1cHQgc2VuZGVyIGNvbm5lY3RlZCB0byB0aGUgcmVjZWl2ZXIwIGludGVyZmFjZSBvZiB0aGUgSVJRIG1hcHBlciBpcyB0aGUgaGlnaGVzdCBwcmlvcml0eSB3aXRoIHNlcXVlbnRpYWwgcmVjZWl2ZXJzIGJlaWluZyBzdWNjZXNzaXZlbHkgbG93ZXIgcHJpb3JpdHku"
-set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "TlVNX1JDVlJT::Mw==::TnVtYmVyIG9mIHJlY2VpdmVycw=="
+set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "TlVNX1JDVlJT::NA==::TnVtYmVyIG9mIHJlY2VpdmVycw=="
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "U0VOREVSX0lSUV9XSURUSA==::MzI=::U2VuZGVyIGludGVycnVwdCB3aWR0aA=="
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "SVJRX01BUA==::MDowLDE6MSwyOjIsMzoz::SVJRIG1hcA=="
 set_global_assignment -entity "lms_ctr_irq_mapper" -library "lms_ctr" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::TUFYIDEw::QXV0byBERVZJQ0VfRkFNSUxZ"
@@ -1408,3 +1408,6 @@ set_global_assignment -entity "lms_ctr_flash_spi" -library "lms_ctr" -name IP_TO
 set_global_assignment -entity "altera_dual_boot" -library "lms_ctr" -name IP_TOOL_NAME "altera_dual_boot"
 set_global_assignment -entity "altera_dual_boot" -library "lms_ctr" -name IP_TOOL_VERSION "18.1"
 set_global_assignment -entity "altera_dual_boot" -library "lms_ctr" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "lms_ctr_dac_spi" -library "lms_ctr" -name IP_TOOL_NAME "altera_avalon_spi"
+set_global_assignment -entity "lms_ctr_dac_spi" -library "lms_ctr" -name IP_TOOL_VERSION "18.1"
+set_global_assignment -entity "lms_ctr_dac_spi" -library "lms_ctr" -name IP_TOOL_ENV "Qsys"

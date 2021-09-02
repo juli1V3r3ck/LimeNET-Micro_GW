@@ -36,7 +36,7 @@
 `timescale 1ns / 100ps
 // ------------------------------------------
 // Generation parameters:
-//   output_name:        lms_dsp_avalon_st_adapter_002_timing_adapter_0
+//   output_name:        lms_dsp_avalon_st_adapter_timing_adapter_1
 //   in_use_ready:       true
 //   out_use_ready:      false
 //   in_use_valid:       true
@@ -57,7 +57,7 @@
 
 
 
-module lms_dsp_avalon_st_adapter_002_timing_adapter_0
+module lms_dsp_avalon_st_adapter_timing_adapter_1
 (  
  output reg         in_ready,
  input               in_valid,

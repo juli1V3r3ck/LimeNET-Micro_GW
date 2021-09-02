@@ -39,11 +39,11 @@
 // ------------------------------------------
 // Generation parameters:
 //   output_name:        lms_dsp_avalon_st_adapter_error_adapter_0
-//   use_ready:          false
+//   use_ready:          true
 //   use_packets:        false
 //   use_empty:          0
 //   empty_width:        0
-//   data_width:         24
+//   data_width:         48
 //   channel_width:      0
 //   in_error_width:     2
 //   out_error_width:    0
@@ -66,12 +66,14 @@
 module lms_dsp_avalon_st_adapter_error_adapter_0
 (
  // Interface: in
+ output reg         in_ready,
  input              in_valid,
- input [24-1: 0]     in_data,
+ input [48-1: 0]     in_data,
  input [2-1: 0]     in_error,
  // Interface: out
+ input               out_ready,
  output reg          out_valid,
- output reg [24-1: 0] out_data,
+ output reg [48-1: 0] out_data,
   // Interface: clk
  input              clk,
  // Interface: reset
@@ -85,6 +87,7 @@ module lms_dsp_avalon_st_adapter_error_adapter_0
    //| Pass-through Mapping
    // ---------------------------------------------------------------------
    always_comb begin
+      in_ready = out_ready;
       out_valid = in_valid;
       out_data = in_data;
 

@@ -1,6 +1,10 @@
 
 module lms_ctr (
 	clk_clk,
+	dac_spi_ext_MISO,
+	dac_spi_ext_MOSI,
+	dac_spi_ext_SCLK,
+	dac_spi_ext_SS_n,
 	exfifo_if_d_export,
 	exfifo_if_rd_export,
 	exfifo_if_rdempty_export,
@@ -24,6 +28,10 @@ module lms_ctr (
 	switch_external_connection_export);	
 
 	input		clk_clk;
+	input		dac_spi_ext_MISO;
+	output		dac_spi_ext_MOSI;
+	output		dac_spi_ext_SCLK;
+	output		dac_spi_ext_SS_n;
 	input	[31:0]	exfifo_if_d_export;
 	output		exfifo_if_rd_export;
 	input		exfifo_if_rdempty_export;
